@@ -1,0 +1,109 @@
+{
+  "experiment_id": "20261021_101253_base",
+  "created_at": "2026-10-21T10:12:53",
+  "note": "약관+용어집, parent-child, child 350/50",
+  "baseline": "",
+  "chunking": {
+    "collection": "base_c350_o50",
+    "doc_types": [
+      "glossary",
+      "standard_terms"
+    ],
+    "source_doc_ids": [
+      "fsc-glossary",
+      "kofia-terms-120-1785",
+      "kofia-terms-121-1789",
+      "kofia-terms-122-1796",
+      "kofia-terms-123-1709",
+      "kofia-terms-124-1710",
+      "kofia-terms-125-1776",
+      "kofia-terms-126-1746",
+      "kofia-terms-127-1713",
+      "kofia-terms-128-1714",
+      "kofia-terms-129-1715",
+      "kofia-terms-130-1716",
+      "kofia-terms-131-1717",
+      "kofia-terms-132-1767",
+      "kofia-terms-133-1766",
+      "kofia-terms-134-1720"
+    ],
+    "child_splitter": "RecursiveCharacterTextSplitter",
+    "chunk_config": "c350_o50",
+    "chunk_size": 350,
+    "chunk_overlap": 50,
+    "separators": [
+      "\n\n",
+      "\n",
+      ". ",
+      " ",
+      ""
+    ],
+    "n_chunks": 1036,
+    "chunk_chars_mean": 183.1,
+    "chunk_chars_median": 173.5,
+    "chunk_chars_max": 349,
+    "strategy": "parent-child",
+    "parent_unit": "## 제목(약관 조항, 용어집 용어)",
+    "n_parents": 612,
+    "chunks_per_parent_mean": 1.69,
+    "parents_split_2plus": 155,
+    "parent_chars_mean": 308.9,
+    "parent_chars_max": 5450
+  },
+  "embedding_model": "models/gemini-embedding-001",
+  "retrievers": {
+    "methods": [
+      "similarity",
+      "mmr",
+      "bm25",
+      "hybrid"
+    ],
+    "result_unit": "parent (같은 parent의 child는 가장 높은 순위로 묶음)",
+    "k_max": 10,
+    "fetch_k": 40,
+    "lambda_mult": 0.5,
+    "weight_vector": 0.5,
+    "bm25": {
+      "tokenizer": "kiwipiepy",
+      "pos_tags": [
+        "NNG",
+        "NNP",
+        "NR",
+        "SH",
+        "SL",
+        "SN",
+        "VA",
+        "VV",
+        "XR"
+      ],
+      "algorithm": "BM25Okapi"
+    },
+    "hybrid": {
+      "fusion": "RRF",
+      "rrf_k": 60,
+      "inputs": [
+        "similarity",
+        "bm25"
+      ]
+    },
+    "mmr": {
+      "candidate_pool": "2 x fetch_k"
+    }
+  },
+  "eval": {
+    "answer_files": [
+      "negative_cases.jsonl",
+      "positive_cases.jsonl"
+    ],
+    "case_filter": "expected_source_ids에 컬렉션이 색인한 문서(source_doc_ids)의 근거가 있는 문항",
+    "n_cases": 68,
+    "n_cases_with_excluded_ids": 0,
+    "relevance_unit": "결과의 source_id(조항·용어·PDF 쪽), 상위 k개 = 컨텍스트",
+    "ks": [
+      1,
+      3,
+      5,
+      10
+    ]
+  }
+}

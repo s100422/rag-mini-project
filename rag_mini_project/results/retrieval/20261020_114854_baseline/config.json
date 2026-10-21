@@ -1,0 +1,87 @@
+{
+  "experiment_id": "20261020_114854_baseline",
+  "created_at": "2026-10-20T11:48:54",
+  "note": "기준 설정: parent=조항, child 500/50, gemini-embedding-001",
+  "baseline": "",
+  "chunking": {
+    "collection": "standard_terms_c500_o50",
+    "strategy": "parent-child",
+    "parent_unit": "## 제목(약관 조항)",
+    "child_splitter": "RecursiveCharacterTextSplitter",
+    "chunk_config": "c500_o50",
+    "chunk_size": 500,
+    "chunk_overlap": 50,
+    "separators": [
+      "\n\n",
+      "\n",
+      ". ",
+      " ",
+      ""
+    ],
+    "n_parents": 384,
+    "n_chunks": 626,
+    "chunks_per_parent_mean": 1.63,
+    "parents_split_2plus": 114,
+    "chunk_chars_mean": 265.7,
+    "chunk_chars_median": 264.5,
+    "chunk_chars_max": 499,
+    "parent_chars_mean": 432.9,
+    "parent_chars_max": 5450
+  },
+  "embedding_model": "models/gemini-embedding-001",
+  "retrievers": {
+    "methods": [
+      "similarity",
+      "mmr",
+      "bm25",
+      "hybrid"
+    ],
+    "result_unit": "parent (같은 parent의 child는 가장 높은 순위로 묶음)",
+    "k_max": 10,
+    "fetch_k": 40,
+    "lambda_mult": 0.5,
+    "weight_vector": 0.5,
+    "bm25": {
+      "tokenizer": "kiwipiepy",
+      "pos_tags": [
+        "NNG",
+        "NNP",
+        "NR",
+        "SH",
+        "SL",
+        "SN",
+        "VA",
+        "VV",
+        "XR"
+      ],
+      "algorithm": "BM25Okapi"
+    },
+    "hybrid": {
+      "fusion": "RRF",
+      "rrf_k": 60,
+      "inputs": [
+        "similarity",
+        "bm25"
+      ]
+    },
+    "mmr": {
+      "candidate_pool": "2 x fetch_k"
+    }
+  },
+  "eval": {
+    "answer_files": [
+      "negative_cases.jsonl",
+      "positive_cases.jsonl"
+    ],
+    "case_filter": "expected_source_ids에 kofia-terms-* 가 있는 문항",
+    "n_cases": 41,
+    "n_cases_with_excluded_ids": 4,
+    "relevance_unit": "parent source_id",
+    "ks": [
+      1,
+      3,
+      5,
+      10
+    ]
+  }
+}

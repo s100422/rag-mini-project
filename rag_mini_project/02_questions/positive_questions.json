@@ -1,0 +1,302 @@
+[
+  {
+    "case_id": "POS001",
+    "difficulty": "basic",
+    "question": "휴면성 증권계좌는 어떤 계좌인가요?"
+  },
+  {
+    "case_id": "POS002",
+    "difficulty": "basic",
+    "question": "확정기여형(DC) 퇴직연금에서는 누가 운용 방법을 지시하며, 운용 결과는 어디에 반영되나요?"
+  },
+  {
+    "case_id": "POS003",
+    "difficulty": "basic",
+    "question": "DB형 퇴직연금의 급여는 어떻게 정해지나요?"
+  },
+  {
+    "case_id": "POS004",
+    "difficulty": "basic",
+    "question": "파생결합증권의 투자수익은 무엇에 따라 결정되나요?"
+  },
+  {
+    "case_id": "POS005",
+    "difficulty": "basic",
+    "question": "커버드본드 투자자는 어떤 두 가지 상환 기반을 가지나요?"
+  },
+  {
+    "case_id": "POS006",
+    "difficulty": "basic",
+    "question": "집합투자규약에는 어떤 내용이 담기나요?"
+  },
+  {
+    "case_id": "POS007",
+    "difficulty": "basic",
+    "question": "주택연금은 어떤 방식으로 지급되는 상품인가요?"
+  },
+  {
+    "case_id": "POS008",
+    "difficulty": "basic",
+    "question": "전자금융거래에서 접근매체란 무엇인가요?"
+  },
+  {
+    "case_id": "POS009",
+    "difficulty": "basic",
+    "question": "자산유동화증권(ABS)은 어떤 방식으로 자금을 조달하나요?"
+  },
+  {
+    "case_id": "POS010",
+    "difficulty": "basic",
+    "question": "은행의 자산건전성은 어떤 다섯 단계로 분류되나요?"
+  },
+  {
+    "case_id": "POS011",
+    "difficulty": "basic",
+    "question": "자금세탁방지제도에서 금융회사가 보고하는 대표 거래는 무엇인가요?"
+  },
+  {
+    "case_id": "POS012",
+    "difficulty": "basic",
+    "question": "인버스 ETF는 추종지수가 상승할 때 일반적으로 어느 방향으로 움직이도록 설계되나요?"
+  },
+  {
+    "case_id": "POS013",
+    "difficulty": "basic",
+    "question": "위탁증거금은 왜 징수하나요?"
+  },
+  {
+    "case_id": "POS014",
+    "difficulty": "basic",
+    "question": "운영 리스크는 어떤 원인에서 발생하나요?"
+  },
+  {
+    "case_id": "POS015",
+    "difficulty": "basic",
+    "question": "오픈뱅킹은 금융기관과 핀테크 업체를 어떻게 연결하나요?"
+  },
+  {
+    "case_id": "POS016",
+    "difficulty": "basic",
+    "question": "업틱룰은 공매도 호가를 어떻게 제한하나요?"
+  },
+  {
+    "case_id": "POS017",
+    "difficulty": "basic",
+    "question": "신용거래는 투자자가 무엇을 빌려 거래하는 방식인가요?"
+  },
+  {
+    "case_id": "POS018",
+    "difficulty": "basic",
+    "question": "비조치의견서는 어떤 불확실성을 줄이기 위한 문서인가요?"
+  },
+  {
+    "case_id": "POS019",
+    "difficulty": "basic",
+    "question": "고객 주문 없이 회사가 임의로 금융상품을 매매할 수 있나요?"
+  },
+  {
+    "case_id": "POS020",
+    "difficulty": "basic",
+    "question": "거래소의 전산장애 조치를 통지받은 증권회사는 고객에게 무엇을 해야 하나요?"
+  },
+  {
+    "case_id": "POS021",
+    "difficulty": "intermediate",
+    "question": "증권계좌를 반년 넘게 쓰지 않았고 남은 주식과 현금을 합쳐 8만원 정도입니다. 금융당국 자료에서는 이런 계좌를 무엇이라고 부르나요?"
+  },
+  {
+    "case_id": "POS022",
+    "difficulty": "intermediate",
+    "question": "회사에서 퇴직연금 부담금은 넣어 주지만 어떤 상품에 굴릴지는 제가 고르고 결과도 제 적립금에 반영된다고 합니다. 이 방식의 이름과 운용 주체를 설명해 주세요."
+  },
+  {
+    "case_id": "POS023",
+    "difficulty": "intermediate",
+    "question": "코스피200은 올랐는데 제가 산 ETF는 반대로 떨어졌습니다. 상품 오류가 아니라면 어떤 유형일 가능성이 높고 왜 그런가요?"
+  },
+  {
+    "case_id": "POS024",
+    "difficulty": "intermediate",
+    "question": "코스피200이나 특정 주식, 금리, 원유 가격에 따라 받을 돈이 달라지는 증권을 권유받았습니다. 어떤 상품이며 수익을 좌우하는 것은 무엇인가요?"
+  },
+  {
+    "case_id": "POS025",
+    "difficulty": "intermediate",
+    "question": "DC형과 DB형 퇴직연금의 차이를 운용 지시와 퇴직급여가 정해지는 방식 중심으로 비교해 주세요."
+  },
+  {
+    "case_id": "POS026",
+    "difficulty": "intermediate",
+    "question": "주식을 빌려 먼저 파는 거래에 왜 직전 가격보다 높은 호가를 요구하는 규칙이 붙나요? 거래 이름과 규칙의 목적을 함께 설명해 주세요."
+  },
+  {
+    "case_id": "POS027",
+    "difficulty": "intermediate",
+    "question": "다른 연금계좌로 돈을 옮기면 무조건 중도 인출로 처리되나요? 원칙과 예외가 있다는 점까지 설명해 주세요."
+  },
+  {
+    "case_id": "POS028",
+    "difficulty": "intermediate",
+    "question": "신용거래 계약서류를 받은 지 10일이 지났고 담보증권은 아직 처분되지 않았습니다. 철회 가능성을 어떻게 안내해야 하나요?"
+  },
+  {
+    "case_id": "POS029",
+    "difficulty": "intermediate",
+    "question": "신용거래 청약철회와 위법계약 해지는 언제 행사하는 권리이며 기간 기준은 어떻게 다른가요?"
+  },
+  {
+    "case_id": "POS030",
+    "difficulty": "intermediate",
+    "question": "질병 때문에 연금저축에서 돈을 꺼내려 합니다. 단순히 아프다는 사실만으로 충분한가요?"
+  },
+  {
+    "case_id": "POS031",
+    "difficulty": "intermediate",
+    "question": "보안카드를 잃어버렸다면 손해배상 여부를 판단하기 전에 어떤 사실들을 확인해야 하나요?"
+  },
+  {
+    "case_id": "POS032",
+    "difficulty": "intermediate",
+    "question": "돈을 잘못 보낸 경우와 거래 시스템이 금액을 잘못 처리한 경우에 금융회사의 대응은 어떻게 다른가요?"
+  },
+  {
+    "case_id": "POS033",
+    "difficulty": "intermediate",
+    "question": "해외주식 매도대금이 국내주식보다 늦게 들어올 수 있는 이유를 결제와 환전 절차로 나누어 설명해 주세요."
+  },
+  {
+    "case_id": "POS034",
+    "difficulty": "intermediate",
+    "question": "해외투자는 종목 가격만 보면 된다는 말이 왜 부족한가요?"
+  },
+  {
+    "case_id": "POS035",
+    "difficulty": "intermediate",
+    "question": "환율 투자 계좌의 담보가 유지선 아래로 내려가 회사가 포지션 일부를 닫았습니다. 약관상 가능한 조치와 사후 의무는 무엇인가요?"
+  },
+  {
+    "case_id": "POS036",
+    "difficulty": "intermediate",
+    "question": "선물·옵션 계좌를 열 때 서류에 서명만 받으면 설명 절차가 끝난 것인가요?"
+  },
+  {
+    "case_id": "POS037",
+    "difficulty": "intermediate",
+    "question": "해외 펀드의 국내 판매가 중단됐다면 기존 고객은 아무 조치도 요구할 수 없나요?"
+  },
+  {
+    "case_id": "POS038",
+    "difficulty": "intermediate",
+    "question": "추가담보를 내지 못하면 곧바로 아무 자산이나 팔아도 되는 건가요?"
+  },
+  {
+    "case_id": "POS039",
+    "difficulty": "intermediate",
+    "question": "외국 펀드의 판매중지와 청약철회는 같은 제도인가요? 고객이 할 수 있는 일을 비교해 주세요."
+  },
+  {
+    "case_id": "POS040",
+    "difficulty": "intermediate",
+    "question": "고객이 파생상품 결제대금을 내지 못해 회사가 포지션을 정리했는데도 돈이 모자랍니다. 남은 금액과 처리 비용은 누가 부담하나요?"
+  },
+  {
+    "case_id": "POS041",
+    "difficulty": "advanced",
+    "question": "퇴직연금 설명서에는 '회사가 매년 일정액을 넣는다', '가입자가 상품을 고른다', '퇴직할 때 받을 금액은 미리 확정된다'는 문장이 함께 적혀 있습니다. 한 제도를 일관되게 설명한 것인지 판단하고, 충돌하는 문장을 바로잡아 주세요."
+  },
+  {
+    "case_id": "POS042",
+    "difficulty": "advanced",
+    "question": "은행이 대출채권을 활용해 자금을 조달하면서 '은행이 망해도 담보 풀에 우선권이 있고 은행에도 상환을 청구할 수 있다'고 설명했습니다. 이 구조를 ABS라고만 부르면 왜 부정확한가요?"
+  },
+  {
+    "case_id": "POS043",
+    "difficulty": "advanced",
+    "question": "'주가가 떨어질 것 같아 증권사 돈을 빌려 주식을 샀고, 빌린 주식을 먼저 판 거래라 업틱룰도 적용된다'는 설명에서 서로 뒤섞인 개념을 찾아 바로잡아 주세요."
+  },
+  {
+    "case_id": "POS044",
+    "difficulty": "advanced",
+    "question": "제가 주문하지 않은 매매가 체결된 날 거래소 전산장애 공지도 있었습니다. '장애가 있었으니 무단 체결도 허용된다'는 증권사 설명을 약관 근거로 검토하고, 별도로 확인할 사실을 정리해 주세요."
+  },
+  {
+    "case_id": "POS045",
+    "difficulty": "advanced",
+    "question": "인증번호를 지인에게 알려준 뒤 휴대전화까지 잃어버렸고, 분실 신고 후에도 결제가 발생했습니다. 회사가 무조건 전액 배상한다고도, 고객 책임이라고도 단정하지 말고 판단 순서와 약관상 배상 기준을 설명해 주세요."
+  },
+  {
+    "case_id": "POS046",
+    "difficulty": "advanced",
+    "question": "이체 화면에는 제가 입력한 계좌번호 그대로 처리됐지만 수취인을 잘못 골랐습니다. 이를 '시스템 오류이니 회사가 즉시 정정해 돈을 돌려줘야 한다'고 주장할 수 있는지, 회사의 실제 의무를 구분해 주세요."
+  },
+  {
+    "case_id": "POS047",
+    "difficulty": "advanced",
+    "question": "연금저축 가입자가 사망하기 전 치료비 때문에 일부를 인출했고, 사망 후 배우자가 다른 연금계좌로 전액 옮기려 합니다. 한 번의 '상속 처리'로 묶지 말고 적용되는 절차와 확인 시점을 나누어 주세요."
+  },
+  {
+    "case_id": "POS048",
+    "difficulty": "advanced",
+    "question": "신용거래 계약서류를 받은 지 12일째 위법한 설명을 알게 됐지만, 추가담보를 내지 못해 어제 담보주식이 처분됐습니다. 청약철회, 위법계약 해지, 담보 처분을 각각 검토해 어떤 결론까지 낼 수 있는지 설명해 주세요."
+  },
+  {
+    "case_id": "POS049",
+    "difficulty": "advanced",
+    "question": "국내주식 미수와 해외주식 미수가 모두 생겼습니다. '둘 다 다음 날 같은 가격으로 자동 매도된다'는 설명의 오류를 찾아 결제정리 시점·가격 기준·추가 확인 항목을 비교해 주세요."
+  },
+  {
+    "case_id": "POS050",
+    "difficulty": "advanced",
+    "question": "미국 주식을 금요일에 팔았는데 원화 출금이 예상보다 늦고 환전 금액도 주문 당시 예상과 다릅니다. 지연과 금액 차이를 설명하되 약관만으로 확정할 수 없는 부분도 밝혀 주세요."
+  },
+  {
+    "case_id": "POS051",
+    "difficulty": "advanced",
+    "question": "해외 펀드를 산 뒤 판매가 중단됐고, 계약서류를 받은 지 6일째 상품 설명이 위법했다는 사실도 알았습니다. 판매중지, 청약철회, 위법계약 해지를 어떤 순서로 검토해야 하며 서로 대체 가능한 권리인가요?"
+  },
+  {
+    "case_id": "POS052",
+    "difficulty": "advanced",
+    "question": "선물 계좌 개설 때 거래설명서를 받지 못했고, 이후 고객 주문 없이 거래가 실행됐으며 결제 부족액까지 생겼습니다. '손실은 모두 고객 책임'이라는 설명을 세 쟁점으로 나누어 평가해 주세요."
+  },
+  {
+    "case_id": "POS053",
+    "difficulty": "advanced",
+    "question": "FX 마진 가입 때 위험 설명은 들었지만, 유지증거금 비율이 빈칸인 표준약관만 받았습니다. 손실이 나자 회사가 포지션을 닫았을 때 '자기책임 조항이 있으니 비율과 절차는 중요하지 않다'고 볼 수 있나요?"
+  },
+  {
+    "case_id": "POS054",
+    "difficulty": "advanced",
+    "question": "거래소 서버 장애로 주문 접수가 중단되고 일부 주문이 취소돼 손실이 발생했습니다. 이를 운영 리스크 사례로 설명할 수 있는지와, 약관만으로 회사의 배상책임까지 확정할 수 있는지를 구분해 주세요."
+  },
+  {
+    "case_id": "POS055",
+    "difficulty": "advanced",
+    "question": "'계약서류를 받은 지 8일이므로 어떤 금융상품이든 철회할 수 없다'는 상담 답변을 검토해 주세요. 신용거래와 외국집합투자증권을 비교하고, 상품명이 없을 때 에이전트가 어떻게 답해야 하나요?"
+  },
+  {
+    "case_id": "POS056",
+    "difficulty": "advanced",
+    "question": "고객 상담 녹취에 계좌번호와 인증수단 정보가 포함돼 있습니다. 이를 외부 분석업체에 넘겨도 되는지 검토할 때 '개인정보니까 안 된다'는 한 문장보다 더 정확히 답하려면 무엇을 구분해야 하나요?"
+  },
+  {
+    "case_id": "POS057",
+    "difficulty": "advanced",
+    "question": "RP를 1천만원에 매수해 30일 뒤 찾으려는데 표준약관의 이율 칸이 비어 있습니다. '원금에 시장 평균금리를 곱하면 환매금액을 계산할 수 있다'는 답변을 평가하고, 지금 계산 가능한 범위를 설명해 주세요."
+  },
+  {
+    "case_id": "POS058",
+    "difficulty": "advanced",
+    "question": "해외 펀드와 해외 주식을 모두 보유한 고객이 '둘 다 해외상품이니 판매중단 시 환매를 요구하고 같은 날 원화로 받을 수 있다'고 합니다. 어떤 부분을 서로 다른 약관으로 나누어 설명해야 하나요?"
+  },
+  {
+    "case_id": "POS059",
+    "difficulty": "advanced",
+    "question": "증권사가 '고객에게 유리한 호가를 제공할 의무가 있으니 FX 거래 손실도 회사가 보전한다'고 안내했습니다. 호가 제공 의무, 위험 설명, 자기책임, 증거금 부족 처리를 연결해 이 설명을 바로잡아 주세요."
+  },
+  {
+    "case_id": "POS060",
+    "difficulty": "advanced",
+    "question": "고객이 매매대금을 내지 못한 직후 회사가 다른 계좌의 자산까지 처분했고, 동시에 '기한의 이익도 상실했다'고 통보했습니다. 일반 결제불이행 처리와 신용거래의 기한이익 상실을 구분해 필요한 선행조건을 설명해 주세요."
+  }
+]

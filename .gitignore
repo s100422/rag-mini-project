@@ -1,0 +1,23 @@
+# 비밀 정보(API 키, DB 비밀번호)
+.env
+.env.*
+
+# 파이썬 가상환경·캐시
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# 벡터 DB: build_index로 다시 만든다. 지금 쓰는 DB는 C:\rag_data\chroma_db(.env의 CHROMA_DIR)
+chroma_db/
+
+# 추출 중간 캐시(pymupdf4llm·vision 응답)와 실행 로그
+rag_mini_project/cache/
+rag_mini_project/logs/
+
+# 에디터·OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

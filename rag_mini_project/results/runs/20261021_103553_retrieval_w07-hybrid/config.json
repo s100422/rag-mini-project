@@ -1,0 +1,167 @@
+{
+  "experiment_id": "20261021_103553_retrieval_w07-hybrid",
+  "sweep_id": "20261021_103553_w07",
+  "stage": "retrieval",
+  "created_at": "2026-10-21T10:35:53",
+  "command": "python -m rag.evaluate --name w07 --collection base_c350_o50 --methods hybrid --weight-vector 0.7 --baseline 20261021_102719_retrieval_base-hybrid --note diff 기능 확인용: 가중치만 변경",
+  "note": "diff 기능 확인용: 가중치만 변경",
+  "settings": {
+    "data": {
+      "answer_files": [
+        "negative_cases.jsonl",
+        "positive_cases.jsonl"
+      ],
+      "case_filter": "expected_source_ids에 컬렉션이 색인한 문서(source_doc_ids)의 근거가 있는 문항",
+      "n_cases": 68,
+      "n_cases_with_excluded_ids": 0,
+      "doc_types": [
+        "glossary",
+        "standard_terms"
+      ],
+      "source_doc_ids": [
+        "fsc-glossary",
+        "kofia-terms-120-1785",
+        "kofia-terms-121-1789",
+        "kofia-terms-122-1796",
+        "kofia-terms-123-1709",
+        "kofia-terms-124-1710",
+        "kofia-terms-125-1776",
+        "kofia-terms-126-1746",
+        "kofia-terms-127-1713",
+        "kofia-terms-128-1714",
+        "kofia-terms-129-1715",
+        "kofia-terms-130-1716",
+        "kofia-terms-131-1717",
+        "kofia-terms-132-1767",
+        "kofia-terms-133-1766",
+        "kofia-terms-134-1720"
+      ]
+    },
+    "chunking": {
+      "collection": "base_c350_o50",
+      "child_splitter": "RecursiveCharacterTextSplitter",
+      "chunk_config": "c350_o50",
+      "chunk_size": 350,
+      "chunk_overlap": 50,
+      "separators": [
+        "\n\n",
+        "\n",
+        ". ",
+        " ",
+        ""
+      ],
+      "n_chunks": 1036,
+      "chunk_chars_mean": 183.1,
+      "chunk_chars_median": 173.5,
+      "chunk_chars_max": 349,
+      "strategy": "parent-child",
+      "parent_unit": "## 제목(약관 조항, 용어집 용어)",
+      "n_parents": 612,
+      "chunks_per_parent_mean": 1.69,
+      "parents_split_2plus": 155,
+      "parent_chars_mean": 308.9,
+      "parent_chars_max": 5450
+    },
+    "embedding": {
+      "model": "models/gemini-embedding-001"
+    },
+    "retrieval": {
+      "method": "hybrid",
+      "k": 10,
+      "fetch_k": 40,
+      "result_unit": "parent (같은 parent의 child는 가장 높은 순위로 묶음)",
+      "bm25": {
+        "tokenizer": "kiwipiepy",
+        "pos_tags": [
+          "NNG",
+          "NNP",
+          "NR",
+          "SH",
+          "SL",
+          "SN",
+          "VA",
+          "VV",
+          "XR"
+        ],
+        "algorithm": "BM25Okapi"
+      },
+      "weight_vector": 0.7,
+      "fusion": "RRF",
+      "rrf_k": 60,
+      "inputs": [
+        "similarity",
+        "bm25"
+      ]
+    },
+    "eval": {
+      "ks": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "relevance_unit": "결과의 source_id(조항·용어·PDF 쪽), 상위 k개 = 컨텍스트"
+    }
+  },
+  "env": {
+    "python": "3.13.13",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "chromadb": "1.5.9",
+      "langchain-chroma": "1.1.0",
+      "langchain-core": "1.6.12",
+      "langchain-google-genai": "4.4.2",
+      "google-genai": "2.31.0",
+      "langchain-text-splitters": "1.1.3",
+      "kiwipiepy": "0.24.0",
+      "rank-bm25": "0.2.2",
+      "psycopg": "3.3.6",
+      "pymupdf": "2.0",
+      "langsmith": "0.14.11"
+    },
+    "code": {
+      "rag/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rag/build_index.py": "8f89385ab1ce089c2f6b4ab6fd6aa9b56156ca56e0ab6385b9f8a714c0e2dd12",
+      "rag/check_golden.py": "e0d84e1324b07834666c9ef08b6c1d5146020c716a0c77b056525608d269ed7f",
+      "rag/chroma_store.py": "56c404afe0c20e80a89bda05d64a3209638b772b658669683fd0ffc6089816fb",
+      "rag/chunking.py": "781ab20637e3b86567ba179a9c5d677f21d383a599bd1b588fe3d9a3b4392a3b",
+      "rag/config.py": "1dfe96aefe08b17d28b8a2ccae4a66d394a5d77acdcfa777f621c93f453a186c",
+      "rag/evaluate.py": "0fab12283b6cdaeb53f547350ce2c43773c5795a9ed923aa5ca7c5b230ded5bc",
+      "rag/experiment.py": "0291d12ef0c886818c0f62739ed8202d668952f11b7366b6ea29fbeceb24ec32",
+      "rag/md_parser.py": "50796d8b8b09e2965a6b20e215db4369ea73b56123bd9ed6db0e5a7f7590d8a5",
+      "rag/pg_store.py": "cc1d60a1c19fb1df769a1446651ad6d2be2aa60dd98d467a5b953092cf0a0771",
+      "rag/retrievers.py": "32a61e5c3b2d4e1eb01b398d0f6d5b350964419a16ffa9ddfca4e256bcb7a2a6",
+      "rag/search.py": "1565d1abde2a54122eb5fb2169bb226b3ead46ae175f9b740bc2494a9494901a"
+    },
+    "data_files": {
+      "03_answers/negative_cases.jsonl": "ff9b193c6f2bc4ac1d512b965341254c7f2e68b50c4d9e2468aaabae568c63c5",
+      "03_answers/positive_cases.jsonl": "d33f65410a619202dfe85df9165aa9920dc98434d4f9939cd12fd3eb619ab943",
+      "md/glossary/financial_glossary_readable.md": "30b0a4d7eeb2f7cc01092cc81340cba4e59a898b5d8e2ad8179ff8f5b6fd52a4",
+      "md/standard_terms/01_매매거래계좌설정약관.md": "5f0abbad7c3fcf500479b309a9f5131ca8d8badc34e4ef8c19a15c38e4e581e4",
+      "md/standard_terms/02_파생상품계좌설정약관.md": "bdd9e93b37d69f0f3a8d707166402f02af168b0a54b11ae7dc56756bcf5a03e8",
+      "md/standard_terms/03_외화증권매매거래계좌설정약관.md": "f7a925d4bcaf24db839788c39f92d66373dc7a412e84d7f21edf1eb52c2fc0bf",
+      "md/standard_terms/04_신용거래약관.md": "6a463cb7e55b3c4a08ae601dfc7cccc35f51ffb092b8cd82a097bafa70dc76a9",
+      "md/standard_terms/05_증권대차거래약관.md": "c07c7faa5ef116473738b934b31459ca34bacd238c3cc46b1ca556b0ce2b6083",
+      "md/standard_terms/06_연금저축계좌설정약관.md": "700593894728346f12f0d178def37370c0e8909ff47e284f176cf044c46cf388",
+      "md/standard_terms/07_대고객환매조건부매매약관.md": "18a62cd4e89c4fc7cbdd6cf873fea594e77c04d53d738bea1cf80558c6e498a8",
+      "md/standard_terms/08_기관간환매조건부매매약관.md": "034b3b2de9ca529c84037f83fcba781e6e1934178533cab3c6756d14f7436fe7",
+      "md/standard_terms/09_기업어음증권거래약관.md": "82de36958441bfeef4d4c75e39de84dbc820894e4ac15a8672151a095b1ed6f3",
+      "md/standard_terms/10_전자금융거래 이용에 관한 기본약관.md": "82e9b25a9d669721c732323f88c4c85aa693f4eaae07ec94e002d3e606c3c800",
+      "md/standard_terms/11_외국집합투자증권 매매거래에 관한 표준약관.md": "228cf2e75cda106d625f791f5e60811d65fed2a253185b548f640212a147b9ee",
+      "md/standard_terms/12_수익증권저축약관.md": "4872de64d4b5b55f2769d2491a6c58bfa2cb66657363b90b9dcfb0c2812fb74c",
+      "md/standard_terms/13_해외파생상품시장거래중개계좌설정약관.md": "299c62d40c6f71d0674454d36685ed7ab5546c33377376bb512ed7438b1d2f55",
+      "md/standard_terms/14_해외파생상품시장거래총괄계좌설정약관.md": "f7ad9703d27d4f39b3da9b81f5b5f742c3abddfcceffbab54f77431b49aaaaf9",
+      "md/standard_terms/15_유사해외통화선물(FX Margin Trading) 거래약관.md": "5570db545379ffe6ec240473e54cb11e0697454d6137964dde61d7dc565f9a2d"
+    },
+    "collection_count": 1036
+  },
+  "baseline_id": "20261021_102719_retrieval_base-hybrid",
+  "changes": [
+    {
+      "path": "retrieval.weight_vector",
+      "baseline": 0.5,
+      "value": 0.7
+    }
+  ],
+  "env_changes": []
+}
