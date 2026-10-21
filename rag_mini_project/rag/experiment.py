@@ -1,7 +1,8 @@
 """실험 기록 공통 코드(설계: docs/experiment_records.md).
 
-results/runs/<experiment_id>/ 에 config.json·per_case.jsonl·summary.json/csv·prompts/·code/를 쓰고,
+results/runs/<experiment_id>/ 에 config.json·per_case.jsonl·summary.json/csv·prompts/를 쓰고,
 results/experiments.csv에 실험당 한 줄을 쌓는다. 검색 평가·기본 RAG·Agent가 같이 쓴다.
+코드 버전은 git 커밋 해시로 남긴다(커밋하지 않은 변경이 있으면 -dirty).
 """
 from __future__ import annotations
 
@@ -9,7 +10,7 @@ import csv
 import hashlib
 import json
 import platform
-import shutil
+import subprocess
 import sys
 from datetime import datetime
 from importlib import metadata
@@ -20,7 +21,6 @@ from .config import ROOT
 RESULTS = ROOT / "results"
 RUNS = RESULTS / "runs"
 INDEX = RESULTS / "experiments.csv"
-CODE_DIR = ROOT / "rag"
 PACKAGES = ["chromadb", "langchain-chroma", "langchain-core", "langchain-google-genai", "google-genai",
             "langchain-text-splitters", "kiwipiepy", "rank-bm25", "psycopg", "pymupdf", "langsmith"]
 
@@ -45,6 +45,18 @@ def experiment_id(sweep_id: str, stage: str, variant: str) -> str:
 
 # ---- 재현 정보 --------------------------------------------------------------
 
+def code_version() -> str:
+    """git 커밋 해시. 커밋하지 않은 변경이 있으면 뒤에 -dirty를 붙인다(git 없으면 unknown)."""
+    try:
+        head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True,
+                              text=True, check=True).stdout.strip()
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", "."], cwd=ROOT, capture_output=True,
+                               text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return "unknown"
+    return head + ("-dirty" if dirty else "")
+
+
 def env_info(data_files: list[Path]) -> dict:
     pkgs = {}
     for p in PACKAGES:
@@ -56,16 +68,9 @@ def env_info(data_files: list[Path]) -> dict:
         "python": platform.python_version(),
         "platform": platform.platform(),
         "packages": pkgs,
-        "code": {f"rag/{p.name}": sha256(p) for p in sorted(CODE_DIR.glob("*.py"))},
+        "code_version": code_version(),
         "data_files": {p.relative_to(ROOT).as_posix(): sha256(p) for p in sorted(set(data_files))},
     }
-
-
-def snapshot_code(run_dir: Path) -> None:
-    dst = run_dir / "code"
-    dst.mkdir(parents=True, exist_ok=True)
-    for p in CODE_DIR.glob("*.py"):
-        shutil.copy2(p, dst / p.name)
 
 
 def save_prompt(run_dir: Path, name: str, text: str) -> dict:
@@ -97,11 +102,13 @@ def diff_settings(baseline: dict, current: dict) -> list[dict]:
 
 
 def diff_env(baseline: dict, current: dict) -> list[str]:
-    """코드·데이터 파일 중 기준 실험과 해시가 다른 것(재현성 확인용)."""
+    """코드 버전과 데이터 파일 중 기준 실험과 다른 것(재현성 확인용)."""
+    a_env, b_env = baseline.get("env", {}), current.get("env", {})
     out = []
-    for group in ("code", "data_files"):
-        a, b = baseline.get("env", {}).get(group, {}), current.get("env", {}).get(group, {})
-        out += [f"{group}:{k}" for k in sorted(a.keys() | b.keys()) if a.get(k) != b.get(k)]
+    if a_env.get("code_version") != b_env.get("code_version"):
+        out.append(f"code_version:{a_env.get('code_version')}→{b_env.get('code_version')}")
+    a, b = a_env.get("data_files", {}), b_env.get("data_files", {})
+    out += [f"data_files:{k}" for k in sorted(a.keys() | b.keys()) if a.get(k) != b.get(k)]
     return out
 
 
@@ -119,7 +126,7 @@ def format_changes(changes: list[dict]) -> str:
 # ---- 쓰기 -------------------------------------------------------------------
 
 def start_run(config: dict, baseline_id: str | None) -> Path:
-    """실험 폴더를 만들고 config(기준 대비 변경 포함)와 코드 사본을 쓴다."""
+    """실험 폴더를 만들고 config(기준 대비 변경 포함)를 쓴다."""
     run_dir = RUNS / config["experiment_id"]
     run_dir.mkdir(parents=True, exist_ok=False)
     config["baseline_id"] = baseline_id or None
@@ -129,7 +136,6 @@ def start_run(config: dict, baseline_id: str | None) -> Path:
         config["env_changes"] = diff_env(base, config)
     else:
         config["changes"], config["env_changes"] = [], []
-    snapshot_code(run_dir)
     write_json(run_dir / "config.json", config)
     return run_dir
 

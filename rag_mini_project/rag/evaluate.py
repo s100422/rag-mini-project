@@ -21,10 +21,9 @@
 분석 그룹: 전체·difficulty·set·category·근거 수·source_doc(근거 문서: 약관/용어집, 가이드북/추가 문서별)
 
 저장(설계: docs/experiment_records.md): 검색기마다 실험 ID 하나, 한 번에 돌린 것은 sweep_id로 묶는다.
-  results/runs/<experiment_id>/config.json     설정 전체(settings) + 기준 대비 변경(changes) + 재현 정보(env)
+  results/runs/<experiment_id>/config.json     설정 전체(settings) + 기준 대비 변경(changes) + 재현 정보(env, 커밋 해시)
   results/runs/<experiment_id>/per_case.jsonl  문항별 검색 결과(청크 ID·컨텍스트 원문)와 지표
   results/runs/<experiment_id>/summary.json/csv 그룹별 통계
-  results/runs/<experiment_id>/code/           실행 당시 rag/*.py 사본
   results/experiments.csv                      실험당 한 줄(실험 간 비교용)
 
 사용법:

@@ -8,7 +8,8 @@
 1. **실험 ID 하나 = 설정 하나.** 검색기 4개를 한 번에 돌리면 실험 ID가 4개 생기고, 이들을 `sweep_id`로 묶는다.
 2. **실험 ID로 모든 기록이 연결된다.** 설정(`config.json`), 문항별 결과(`per_case.jsonl`), 요약(`summary.json`), 실험 목록(`experiments.csv`)이 모두 `experiment_id`를 가진다.
 3. **기준 대비 변경은 사람이 적지 않고 자동으로 뽑는다.** `--baseline <실험ID>`를 주면 두 config의 `settings`를 비교해 달라진 항목만 `changes`에 남긴다. 사람이 쓰는 `note`는 의도·가설용이다.
-4. **재실행에 필요한 것은 모두 남긴다.** 실행 명령, 설정 전체, 프롬프트 원문, 코드 사본·해시, 데이터 파일 해시, 패키지 버전.
+4. **재실행에 필요한 것은 모두 남긴다.** 실행 명령, 설정 전체, 프롬프트 원문, 코드 버전(git 커밋 해시), 데이터 파일 해시, 패키지 버전.
+   평가할 때마다 커밋할 필요는 없다. 커밋하지 않은 변경이 있으면 해시 뒤에 `-dirty`가 붙는다.
 5. **파일로 저장한다(JSON/JSONL/CSV).** DB 없이 열어 보고 diff할 수 있고 제출하기 쉽다.
 
 ## 폴더 구조
@@ -21,7 +22,6 @@ results/
     per_case.jsonl                 문항별 실행 결과와 점수(한 줄 = 한 문항)
     summary.json, summary.csv      전체·그룹별 집계
     prompts/<name>.txt             이 실험에서 쓴 프롬프트 원문(rag·agent)
-    code/<file>.py                 실행 당시 rag/*.py 사본
 ```
 
 실험 ID 형식: `YYYYMMDD_HHMMSS_<stage>_<이름>` (예: `20261021_103000_retrieval_base-hybrid`).
@@ -70,11 +70,11 @@ sweep ID 형식: `YYYYMMDD_HHMMSS_<이름>` (한 번의 실행 명령으로 만�
 
   "env": {                          // 재현 정보(결과 해석보다는 재실행용, changes에 넣지 않음)
     "python": "3.13.x", "packages": {"chromadb": "1.5.9", ...},
-    "code": {"rag/evaluate.py": "sha256", ...},      // code/ 폴더에 사본
+    "code_version": "143b2e9",                       // git 커밋 해시, 커밋 안 한 변경이 있으면 "143b2e9-dirty"
     "data_files": {"03_answers/positive_cases.jsonl": "sha256", "md/glossary/...md": "sha256"},
     "collection_count": 1036
   },
-  "env_changes": ["기준 실험과 다른 코드·데이터 파일"]   // baseline이 있을 때
+  "env_changes": ["기준 실험과 다른 코드 버전·데이터 파일"]   // baseline이 있을 때
 }
 ```
 
@@ -120,7 +120,7 @@ rag·agent는 여기에 답변 점수 평균과 비용 합계·평균(호출 수
 ## experiments.csv (실험 비교표)
 
 실험당 한 줄. 열: `experiment_id`, `sweep_id`, `stage`, `created_at`, `baseline_id`, `changes`(예: `retrieval.method: similarity→hybrid`),
-`env_changes`(기준과 해시가 다른 코드·데이터 파일 수), `note`, `collection`, `strategy`, `chunk_size`, `chunk_overlap`,
+`env_changes`(기준과 다른 코드 버전·데이터 파일 수), `note`, `collection`, `strategy`, `chunk_size`, `chunk_overlap`,
 `retrieval_method`, `k`, `fetch_k`, `weight_vector`, `lambda_mult`, `generation_model`, `n_cases`, `answer_files`,
 대표 지표 `ctx_hit`·`ctx_recall`·`ctx_precision`·`ctx_source_coverage`·`ctx_key_phrase_recall`·`ctx_dup_rate`·`ctx_context_chars`·`mrr`,
 k별 전체 지표, 시간(rag·agent는 비용 합계 추가).
