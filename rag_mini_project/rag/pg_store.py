@@ -32,13 +32,14 @@ CREATE TABLE IF NOT EXISTS parents (
 -- 골든셋 근거 ID (03_answers의 expected_source_ids와 같은 형식)
 ALTER TABLE parents ADD COLUMN IF NOT EXISTS source_id TEXT;      -- kofia-terms-123-1709-015
 ALTER TABLE parents ADD COLUMN IF NOT EXISTS source_doc_id TEXT;  -- kofia-terms-123-1709
+ALTER TABLE parents ADD COLUMN IF NOT EXISTS source_ids JSONB;    -- 근거 여러 개에 걸친 parent(가이드북 제목 단위 등)
 CREATE INDEX IF NOT EXISTS parents_doc_idx ON parents (doc_type, doc_id, seq);
 CREATE INDEX IF NOT EXISTS parents_source_id_idx ON parents (source_id);
 """
 
 COLUMNS = ["parent_id", "doc_id", "doc_type", "source_file", "doc_title", "seq", "heading",
            "article_no", "article_title", "content", "page_start", "page_end", "page_breaks",
-           "source_url", "effective_date", "version", "char_len", "source_id", "source_doc_id"]
+           "source_url", "effective_date", "version", "char_len", "source_id", "source_doc_id", "source_ids"]
 
 
 def ensure_database(cfg: PgSettings | None = None) -> None:
@@ -72,7 +73,7 @@ def replace_parents(conn: psycopg.Connection, parents: list[Parent]) -> int:
         p.parent_id, p.doc_id, p.doc_type, p.source_file, p.doc_title, p.seq, p.heading,
         p.article_no, p.article_title, p.content, p.page_start, p.page_end,
         json.dumps(p.page_breaks), p.source_url, p.effective_date, p.version, len(p.content),
-        p.source_id, p.source_doc_id,
+        p.source_id, p.source_doc_id, json.dumps(p.source_ids) if p.source_ids else None,
     ) for p in parents]
     with conn.transaction():
         with conn.cursor() as cur:

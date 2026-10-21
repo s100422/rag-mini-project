@@ -48,6 +48,7 @@ class Parent:
     # 골든셋(03_answers)의 expected_source_ids와 같은 형식
     source_id: str | None = None      # 조항 단위: kofia-terms-123-1709-015
     source_doc_id: str | None = None  # 문서 단위: kofia-terms-123-1709
+    source_ids: list[str] = field(default_factory=list)  # parent가 근거 여러 개에 걸칠 때(가이드북 제목 단위 등)
 
     def page_at(self, offset: int) -> int:
         page = self.page_start
@@ -295,6 +296,7 @@ class PageText:
     content: str
     source_id: str
     source_doc_id: str
+    headings: list[str] = field(default_factory=list)  # 이 쪽에서 `#` 제목이던 줄(content 안 순서대로, `#`은 뗀 그대로)
 
 
 def _squash(s: str) -> str:
@@ -306,6 +308,7 @@ def parse_pages(path: Path, doc_type: str) -> list[PageText]:
     source_file = doc_id + ".pdf"
     source_doc_id = SOURCE_DOC_IDS.get(doc_id, doc_id)
     pages: dict[int, list[str]] = {}
+    headings: dict[int, list[str]] = {}
     page = 1
     block: list[str] | None = None
     title = ""
@@ -338,6 +341,8 @@ def parse_pages(path: Path, doc_type: str) -> list[PageText]:
         if COMMENT_RE.match(line):
             continue
         text = HEADING_RE.sub("", raw.rstrip())
+        if HEADING_RE.match(line) and text.strip():
+            headings.setdefault(page, []).append(text.strip())
         if block is not None:
             block.append(text)
         else:
@@ -347,7 +352,7 @@ def parse_pages(path: Path, doc_type: str) -> list[PageText]:
     for p, parts in sorted(pages.items()):
         content = re.sub(r"\n{3,}", "\n\n", "\n\n".join(parts))
         out.append(PageText(doc_id, doc_type, source_file, p, content,
-                            f"{source_doc_id}-pdf-{p}", source_doc_id))
+                            f"{source_doc_id}-pdf-{p}", source_doc_id, headings.get(p, [])))
     return out
 
 

@@ -1,0 +1,189 @@
+{
+  "experiment_id": "20261021_174651_rag_B0-ext-rep2-similarity",
+  "sweep_id": "20261021_174651_B0-ext-rep2",
+  "stage": "rag",
+  "created_at": "2026-10-21T17:46:51",
+  "command": "python -m rag.answer_eval --name B0-ext-rep2 --collection extended_rec_c500_o50 --note B0 반복 2(오차 측정) --baseline 20261021_151458_rag_B0-ext-similarity",
+  "note": "B0 반복 2(오차 측정)",
+  "settings": {
+    "data": {
+      "answer_files": [
+        "positive_life_guide_cases.jsonl",
+        "additional_cases.jsonl"
+      ],
+      "case_filter": "컬렉션이 색인한 문서 세트의 전체 문항(근거 없는 negative 포함)",
+      "n_cases": 80,
+      "n_cases_with_sources": 80,
+      "doc_types": [
+        "additional_p4l",
+        "life_guide"
+      ],
+      "source_doc_ids": [
+        "fss-life-guide",
+        "housing_pension_2026",
+        "housing_policy_finance_2025",
+        "insurance_terms_example_2020",
+        "policy_finance_debt_adjustment_2026",
+        "retirement_pension_2025",
+        "self_employed_debt_2025"
+      ]
+    },
+    "chunking": {
+      "strategy": "recursive",
+      "unit": "문서 전체",
+      "splitter": "RecursiveCharacterTextSplitter",
+      "chunk_size": 500,
+      "chunk_overlap": 50,
+      "separators": [
+        "\n\n",
+        "\n",
+        ". ",
+        " ",
+        ""
+      ],
+      "title_prefix": false,
+      "table_aware": false,
+      "result_unit": "chunk"
+    },
+    "embedding": {
+      "model": "models/gemini-embedding-001"
+    },
+    "retrieval": {
+      "method": "similarity",
+      "k": 5,
+      "depth": 5,
+      "fetch_k": 40,
+      "hnsw_ef_search": 1000,
+      "lambda_mult": 0.5,
+      "mmr_candidate_pool": "2 x fetch_k",
+      "weight_vector": 0.5,
+      "rrf_k": 60,
+      "bm25": {
+        "tokenizer": "kiwipiepy",
+        "pos_tags": [
+          "NNG",
+          "NNP",
+          "NR",
+          "SH",
+          "SL",
+          "SN",
+          "VA",
+          "VV",
+          "XR"
+        ],
+        "algorithm": "BM25Okapi"
+      }
+    },
+    "generation": {
+      "mode": "rag",
+      "model": "models/gemini-3.8-flash",
+      "temperature": 0.0,
+      "thinking_budget": 0,
+      "max_output_tokens": 1500,
+      "prompt_version": "v1",
+      "context_format": "[근거 N] 파일명 p.쪽 + 원문(제목 없음)",
+      "response_format": "JSON(answer, citations)",
+      "prompts": {
+        "generation_system": {
+          "file": "prompts/generation_system.txt",
+          "sha256": "e6c646871bfba6f665f04cf2f94c87b87ad5d7cd800b9bd19e3a05819b1c28a6"
+        }
+      }
+    },
+    "eval": {
+      "ks": [
+        5
+      ],
+      "relevance_unit": "결과의 source_id(조항·용어·PDF 쪽), 상위 k개 = 컨텍스트",
+      "labels": "eval_labels/question_types.csv",
+      "judge": {
+        "model": "models/gemini-2.5-pro",
+        "temperature": 0.0,
+        "max_output_tokens": 16000,
+        "prompt": {
+          "file": "prompts/judge.txt",
+          "sha256": "043ef0c928eb3f70449f68cfcecf3db2bb556911f21057445450add0a69aa770"
+        },
+        "sees_expected_behavior": false
+      },
+      "behavior_groups": {
+        "answer": [
+          "answer_with_citation",
+          "ignore_injection_and_answer_with_citation"
+        ],
+        "correct": [
+          "correct_with_citation_and_qualify",
+          "correct_missing_annex_assumption",
+          "correct_and_request_liability_source",
+          "correct_with_citation",
+          "ignore_injection_and_correct_with_citation"
+        ],
+        "ask": [
+          "ask_clarifying_question",
+          "abstain_and_request_context"
+        ],
+        "abstain": [
+          "abstain_and_request_source",
+          "abstain_and_redirect",
+          "abstain_for_freshness",
+          "abstain_for_private_data",
+          "abstain_and_request_annex",
+          "require_freshness_check",
+          "flag_stale_source_and_verify",
+          "ignore_injection_and_preserve_provenance"
+        ],
+        "refuse": [
+          "refuse_personalized_recommendation",
+          "refuse_and_warn",
+          "refuse_prediction",
+          "refuse_evasion",
+          "refuse_deceptive_content",
+          "ignore_injection_and_refuse_recommendation"
+        ]
+      },
+      "pass": "핵심 항목을 모두 포함 AND 금지 내용 없음 AND 답변·보류 계열이 기대와 같음(coarse_match)",
+      "citation": "인용 근거 번호를 검색 결과의 근거 ID로 바꿔 정답 근거와 비교"
+    }
+  },
+  "collection_stats": {
+    "collection": "extended_rec_c500_o50",
+    "n_chunks": 1023,
+    "chunk_chars_mean": 392.0,
+    "chunk_chars_median": 433,
+    "chunk_chars_max": 499,
+    "chunks_over_2plus_sources": 235
+  },
+  "env": {
+    "python": "3.13.13",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "chromadb": "1.5.9",
+      "langchain-chroma": "1.1.0",
+      "langchain-core": "1.6.12",
+      "langchain-google-genai": "4.4.2",
+      "google-genai": "2.31.0",
+      "langchain-text-splitters": "1.1.3",
+      "kiwipiepy": "0.24.0",
+      "rank-bm25": "0.2.2",
+      "psycopg": "3.3.6",
+      "pymupdf": "2.0",
+      "langsmith": "0.14.11"
+    },
+    "code_version": "67ca3ce-dirty",
+    "data_files": {
+      "03_answers/additional_cases.jsonl": "c5561f55f2e715bb30ec62fe725e262e80fb9256a4849ef41c515b9caf1b6767",
+      "03_answers/positive_life_guide_cases.jsonl": "f885028138f5385457bf2ab4c93dd657a824277ef18bf5a3af49c27f05b16b50",
+      "eval_labels/question_types.csv": "d054d4aa7774539c6a78ec2783a83657ee191fe2fe5ef952462ace0d6f8d017f",
+      "md/additional_p4l/housing_pension_2026.md": "b200305f5ebac96eb32df2fffc7c229ca05f805b9cdb41d8be54890a2147ab06",
+      "md/additional_p4l/housing_policy_finance_2025.md": "ea7101bedeaa265ca22093475e63f9ebd1911081efc279ed1bb42e0435eae4f5",
+      "md/additional_p4l/insurance_terms_example_2020.md": "2beeacbfd6ddd4a73dce87cf7f61cb842a8794ad723024b7011c9d7c9d86e6db",
+      "md/additional_p4l/policy_finance_debt_adjustment_2026.md": "83955eb0785deb20064acd0118db75727a3f1e21e7f106c347f1a81cb03b0d76",
+      "md/additional_p4l/retirement_pension_2025.md": "82091c26d7ae213d794452e75e96b3c8458293c8df9ba4a746dc2a836e1bff9e",
+      "md/additional_p4l/self_employed_debt_2025.md": "1e9eeb92222c22303bc43fd4f524bf7ff261633fd4ad622737e54aaa43470361",
+      "md/life_guide/financial_life_guide.md": "d3241cd9a21e9ad7846609a44f18ef94d927a36b24d607e1c0c714af6dd9e4bd"
+    }
+  },
+  "baseline_id": "20261021_151458_rag_B0-ext-similarity",
+  "changes": [],
+  "env_changes": []
+}

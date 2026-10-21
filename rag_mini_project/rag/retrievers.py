@@ -54,6 +54,7 @@ class RetrievalResult:
     heading: str
     page_start: int                 # parent 쪽 범위
     page_end: int
+    source_ids: list[str] = field(default_factory=list)          # 이 결과가 걸친 근거 ID 전부(문서 전체를 자른 청크는 여러 개)
     matched_chunk_ids: list[str] = field(default_factory=list)  # 이 parent에서 걸린 child (순위순)
     matched_pages: list[int] = field(default_factory=list)      # 걸린 child가 있는 쪽
     content: str = ""               # parent 원문(답변 생성 컨텍스트)
@@ -147,15 +148,17 @@ class Retriever:
             if pid not in parents:  # parent 없는 청크: 청크 메타데이터·본문을 그대로 쓴다
                 m = hs[0].metadata
                 p = {"source_id": m.get("source_id"), "source_doc_id": m.get("source_doc_id"),
+                     "source_ids": m.get("source_ids"),
                      "source_file": m["source_file"], "doc_title": m.get("doc_title", m["doc_id"]),
                      "heading": m.get("heading", ""), "page_start": m["page_start"],
                      "page_end": m["page_end"], "content": hs[0].text}
             else:
                 p = parents[pid]
             pages = sorted({pg for h in hs for pg in range(h.metadata["page_start"], h.metadata["page_end"] + 1)})
+            source_ids = p.get("source_ids") or ([p["source_id"]] if p["source_id"] else [])
             results.append(RetrievalResult(
                 rank=rank, retriever=method, score=hs[0].score, parent_id=pid,
-                source_id=p["source_id"], source_doc_id=p["source_doc_id"],
+                source_id=p["source_id"], source_doc_id=p["source_doc_id"], source_ids=list(source_ids),
                 source_file=p["source_file"], doc_title=p["doc_title"], heading=p["heading"],
                 page_start=p["page_start"], page_end=p["page_end"],
                 matched_chunk_ids=[h.chunk_id for h in hs], matched_pages=pages,

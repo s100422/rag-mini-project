@@ -9,6 +9,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -18,7 +19,7 @@ from pathlib import Path
 
 from .config import ROOT
 
-RESULTS = ROOT / "results"
+RESULTS = Path(os.getenv("RAG_RESULTS_DIR") or ROOT / "results")  # 시험 실행은 다른 폴더로 돌려 기록을 어지럽히지 않는다
 RUNS = RESULTS / "runs"
 INDEX = RESULTS / "experiments.csv"
 PACKAGES = ["chromadb", "langchain-chroma", "langchain-core", "langchain-google-genai", "google-genai",
@@ -49,9 +50,9 @@ def code_version() -> str:
     """git 커밋 해시. 커밋하지 않은 변경이 있으면 뒤에 -dirty를 붙인다(git 없으면 unknown)."""
     try:
         head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True,
-                              text=True, check=True).stdout.strip()
+                              encoding="utf-8", errors="replace", check=True).stdout.strip()
         dirty = subprocess.run(["git", "status", "--porcelain", "--", "."], cwd=ROOT, capture_output=True,
-                               text=True, check=True).stdout.strip()
+                               encoding="utf-8", errors="replace", check=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         return "unknown"
     return head + ("-dirty" if dirty else "")

@@ -132,26 +132,33 @@ def _coverage(source: str, contents: list[str]) -> float:
 
 
 def case_metrics(results: list, case: dict, ks: list[int]) -> dict:
-    """상위 k개 결과(=컨텍스트)로 문항 지표를 계산한다."""
-    retrieved = [r.source_id for r in results]
+    """상위 k개 결과(=컨텍스트)로 문항 지표를 계산한다.
+
+    결과 하나가 근거 여러 개에 걸칠 수 있다(문서 전체를 자른 청크). 그때는
+    - 걸친 근거 중 하나라도 정답이면 그 자리는 정답(hit·precision·mrr)
+    - 걸친 정답 근거는 모두 찾은 것(recall)
+    - 앞 자리에서 이미 나온 근거로만 이루어진 자리는 중복(dup_rate)
+    """
+    slots = [set(r.source_ids) for r in results]
     exp = set(case["expected_source_ids"])
     texts = source_texts()
     phrases = [p for p in case["must_include"]
                if any(_squash(p) in _squash(texts.get(s, "")) for s in exp)]  # 원문에 그대로 있는 구절만
     m: dict[str, float | None] = {}
     for k in ks:
-        top, contents = retrieved[:k], [r.content for r in results[:k]]
-        found = exp & set(top)
+        top, contents = slots[:k], [r.content for r in results[:k]]
+        found = exp & set().union(*top)
         m[f"hit@{k}"] = float(bool(found))
         m[f"recall@{k}"] = len(found) / len(exp)
         m[f"all_hit@{k}"] = float(found == exp)
-        m[f"precision@{k}"] = sum(1 for s in top if s in exp) / k
-        m[f"dup_rate@{k}"] = 1 - len(set(top)) / len(top) if top else 0.0
+        m[f"precision@{k}"] = sum(1 for s in top if s & exp) / k
+        m[f"dup_rate@{k}"] = (sum(1 for i, s in enumerate(top) if s <= set().union(*top[:i])) / len(top)
+                              if top else 0.0)
         m[f"context_chars@{k}"] = sum(len(c) for c in contents)
         m[f"source_coverage@{k}"] = statistics.mean(_coverage(texts.get(s, ""), contents) for s in exp)
         ctx = _squash("".join(contents))
         m[f"key_phrase_recall@{k}"] = (sum(_squash(p) in ctx for p in phrases) / len(phrases)) if phrases else None
-    first = next((i for i, s in enumerate(retrieved, start=1) if s in exp), None)
+    first = next((i for i, s in enumerate(slots, start=1) if s & exp), None)
     m["mrr"] = 1 / first if first else 0.0
     m["first_relevant_rank"] = first
     m["key_phrases_checked"] = len(phrases)
@@ -196,71 +203,75 @@ GROUPS = {
 
 # ---- 청킹 전략 기록 ----------------------------------------------------------
 
-def chunking_info(retriever: Retriever) -> dict:
+def chunking_info(retriever: Retriever) -> tuple[dict, dict, list[str], list[str]]:
+    """(청킹 설정, 컬렉션 통계, 문서 종류, 근거 문서 ID).
+
+    설정은 build_index가 컬렉션 메타데이터에 남긴 값을 읽는다(기준 대비 변경 비교에 쓰임).
+    통계(청크 수·길이 등)는 설정에 따라 따라오는 값이라 settings 밖(collection_stats)에 둔다.
+    메타데이터가 없는 예전 컬렉션은 청크에서 추정한다.
+    """
     data = retriever.vs.get(include=["documents", "metadatas"])
     metas, docs = data["metadatas"], data["documents"]
+    cmeta = retriever.vs._collection.metadata or {}
+    has_parent = any("parent_id" in m for m in metas)
     configs = sorted({m.get("chunk_config") for m in metas})
     size = overlap = None
     if len(configs) == 1 and (m := re.fullmatch(r"c(\d+)_o(\d+)", configs[0] or "")):
         size, overlap = int(m[1]), int(m[2])
-    lens = [len(d) for d in docs]
-    common = {
-        "collection": retriever.collection,
-        "doc_types": sorted({m["doc_type"] for m in metas}),
-        "source_doc_ids": sorted({m["source_doc_id"] for m in metas if m.get("source_doc_id")}),
-        "child_splitter": "RecursiveCharacterTextSplitter",
-        "chunk_config": configs[0] if len(configs) == 1 else configs,
-        "chunk_size": size,
-        "chunk_overlap": overlap,
+    strategy = cmeta.get("chunk_strategy") or ("parent-child" if has_parent else "page")
+    settings = {
+        "strategy": strategy,
+        "unit": cmeta.get("chunk_unit") or ("조항·용어 parent" if has_parent else "PDF 쪽"),
+        "splitter": "RecursiveCharacterTextSplitter",
+        "chunk_size": cmeta.get("chunk_size", size),
+        "chunk_overlap": cmeta.get("chunk_overlap", overlap),
         "separators": SEPARATORS,
+        "title_prefix": bool(cmeta.get("title_prefix", False)),
+        "table_aware": bool(cmeta.get("table_aware", False)),
+        "result_unit": "parent" if has_parent else "chunk",
+    }
+    lens = [len(d) for d in docs]
+    stats = {
+        "collection": retriever.collection,
         "n_chunks": len(docs),
         "chunk_chars_mean": round(statistics.mean(lens), 1),
         "chunk_chars_median": statistics.median(lens),
         "chunk_chars_max": max(lens),
+        "chunks_over_2plus_sources": sum(1 for m in metas if len(m.get("source_ids") or []) > 1),
     }
-    if not any("parent_id" in m for m in metas):
-        pages = {(m["doc_id"], m["page_start"]) for m in metas}
-        return {**common, "strategy": "flat", "split_unit": "PDF 쪽(청크가 쪽을 넘지 않음)",
-                "n_pages": len(pages), "chunks_per_page_mean": round(len(docs) / len(pages), 2)}
-    per_parent: dict[str, int] = {}
-    for m in metas:
-        per_parent[m["parent_id"]] = per_parent.get(m["parent_id"], 0) + 1
-    with pg_store.connect() as conn:
-        n_parents, parent_mean, parent_max = conn.execute(
-            "SELECT count(*), avg(char_len), max(char_len) FROM parents WHERE parent_id = ANY(%s)",
-            (list(per_parent),)).fetchone()
-    return {
-        **common,
-        "strategy": "parent-child",
-        "parent_unit": "## 제목(약관 조항, 용어집 용어)",
-        "n_parents": n_parents,
-        "chunks_per_parent_mean": round(len(docs) / len(per_parent), 2),
-        "parents_split_2plus": sum(1 for v in per_parent.values() if v > 1),
-        "parent_chars_mean": round(float(parent_mean), 1),
-        "parent_chars_max": parent_max,
-    }
+    if has_parent:
+        per_parent: dict[str, int] = {}
+        for m in metas:
+            per_parent[m["parent_id"]] = per_parent.get(m["parent_id"], 0) + 1
+        with pg_store.connect() as conn:
+            n_parents, parent_mean, parent_max = conn.execute(
+                "SELECT count(*), avg(char_len), max(char_len) FROM parents WHERE parent_id = ANY(%s)",
+                (list(per_parent),)).fetchone()
+        stats |= {"n_parents": n_parents, "chunks_per_parent_mean": round(len(docs) / len(per_parent), 2),
+                  "parents_split_2plus": sum(1 for v in per_parent.values() if v > 1),
+                  "parent_chars_mean": round(float(parent_mean), 1), "parent_chars_max": parent_max}
+    doc_types = sorted({m["doc_type"] for m in metas})
+    source_doc_ids = sorted({m["source_doc_id"] for m in metas if m.get("source_doc_id")})
+    return settings, stats, doc_types, source_doc_ids
 
 
 # ---- 설정 ------------------------------------------------------------------
 
-def retrieval_settings(method: str, args, k_max: int, strategy: str, hnsw: dict) -> dict:
-    """검색 설정. 이 방식에 실제로 쓰이는 인자만 넣어 기준 대비 변경이 정확히 잡히게 한다."""
-    s = {
+def retrieval_settings(method: str, args, k_max: int, hnsw: dict) -> dict:
+    """검색 설정. 방식과 상관없이 모든 인자를 항상 넣는다(방식을 바꾸면 changes에 method 하나만 잡히게).
+    lambda_mult는 mmr, weight_vector·rrf_k는 hybrid, bm25는 bm25·hybrid에서만 쓰인다."""
+    return {
         "method": method,
         "k": args.k,                 # 컨텍스트에 넣는 결과 수(대표 지표 기준)
         "depth": k_max,              # 지표를 계산하려고 받아 두는 결과 수(ks의 최댓값)
         "fetch_k": args.fetch_k,
         "hnsw_ef_search": hnsw.get("ef_search"),
-        "result_unit": ("parent (같은 parent의 child는 가장 높은 순위로 묶음)" if strategy == "parent-child"
-                        else "chunk (parent 없음, 청크 하나가 컨텍스트 한 자리)"),
+        "lambda_mult": args.lambda_mult,
+        "mmr_candidate_pool": "2 x fetch_k",
+        "weight_vector": args.weight_vector,
+        "rrf_k": RRF_K,
+        "bm25": {"tokenizer": "kiwipiepy", "pos_tags": sorted(BM25_TAGS), "algorithm": "BM25Okapi"},
     }
-    if method == "mmr":
-        s |= {"lambda_mult": args.lambda_mult, "candidate_pool": "2 x fetch_k"}
-    if method in ("bm25", "hybrid"):
-        s["bm25"] = {"tokenizer": "kiwipiepy", "pos_tags": sorted(BM25_TAGS), "algorithm": "BM25Okapi"}
-    if method == "hybrid":
-        s |= {"weight_vector": args.weight_vector, "fusion": "RRF", "rrf_k": RRF_K, "inputs": ["similarity", "bm25"]}
-    return s
 
 
 def data_files(files: list[str], doc_types: list[str]) -> list[Path]:
@@ -288,10 +299,9 @@ def main() -> None:
     ks = sorted(set(args.ks) | {args.k})
     k_max = ks[-1]
     retriever = Retriever(args.collection)
-    chunking = chunking_info(retriever)
-    cases, files = load_cases(set(chunking["source_doc_ids"]))
-    doc_types, source_doc_ids = chunking.pop("doc_types"), chunking.pop("source_doc_ids")
-    env = env_info(data_files(files, doc_types)) | {"collection_count": chunking["n_chunks"]}
+    chunking, collection_stats, doc_types, source_doc_ids = chunking_info(retriever)
+    cases, files = load_cases(set(source_doc_ids))
+    env = env_info(data_files(files, doc_types))
     sweep_id = new_sweep_id(args.name)
     metric_keys = [f"{name}@{k}" for name in ("hit", "recall", "all_hit", "precision", "source_coverage",
                                               "key_phrase_recall", "dup_rate", "context_chars") for k in ks] + ["mrr"]
@@ -317,7 +327,7 @@ def main() -> None:
                 },
                 "chunking": chunking,
                 "embedding": {"model": EMBEDDING_MODEL},
-                "retrieval": retrieval_settings(method, args, k_max, chunking["strategy"],
+                "retrieval": retrieval_settings(method, args, k_max,
                                                 retriever.vs._collection.configuration_json.get("hnsw", {})),
                 "eval": {
                     "ks": ks,
@@ -325,9 +335,11 @@ def main() -> None:
                     "labels": LABELS.relative_to(ROOT).as_posix(),
                     "source_coverage": "정답 근거 원문 중 컨텍스트에 들어간 글자 비율(줄 단위 매칭, 5자 미만 줄 제외)",
                     "key_phrase_recall": "must_include 중 정답 근거 원문에 그대로 있는 구절의 컨텍스트 포함률(없으면 제외)",
-                    "dup_rate": "상위 k개 중 같은 source_id가 겹친 비율",
+                    "dup_rate": "상위 k개 중 앞 자리에서 이미 나온 근거로만 이루어진 자리의 비율",
+                    "multi_source_rule": "결과가 근거 여러 개에 걸치면 하나라도 정답이면 정답 자리, 걸친 정답은 모두 찾은 것",
                 },
             },
+            "collection_stats": collection_stats,
             "env": env,
         }
         run_dir = start_run(config, args.baseline)
@@ -344,13 +356,14 @@ def main() -> None:
                     "experiment_id": exp_id, "sweep_id": sweep_id, **c,
                     "metrics": case_metrics(results, c, ks),
                     "latency_ms": round(latency, 1),
+                    # 원문은 컨텍스트에 넣는 k개까지만 저장한다(그 뒤 순위는 진단용 ID만)
                     "retrieved": [{
-                        "rank": r.rank, "source_id": r.source_id, "parent_id": r.parent_id,
+                        "rank": r.rank, "source_ids": r.source_ids, "parent_id": r.parent_id,
                         "chunk_ids": r.matched_chunk_ids, "score": round(r.score, 6),
                         "source_file": r.source_file, "heading": r.heading,
                         "page_start": r.page_start, "page_end": r.page_end, "matched_pages": r.matched_pages,
-                        "relevant": r.source_id in c["expected_source_ids"],
-                        "content": r.content,
+                        "relevant": bool(set(r.source_ids) & set(c["expected_source_ids"])),
+                        **({"content": r.content} if r.rank <= args.k else {}),
                     } for r in results],
                     "error": None,
                 }
@@ -376,6 +389,7 @@ def main() -> None:
             "note": args.note,
             "collection": args.collection, "strategy": chunking["strategy"],
             "chunk_size": chunking["chunk_size"], "chunk_overlap": chunking["chunk_overlap"],
+            "title_prefix": chunking["title_prefix"], "table_aware": chunking["table_aware"],
             "embedding_model": EMBEDDING_MODEL, "retrieval_method": method, "k": args.k, "fetch_k": args.fetch_k,
             "weight_vector": r.get("weight_vector", ""), "lambda_mult": r.get("lambda_mult", ""),
             "generation_model": "",

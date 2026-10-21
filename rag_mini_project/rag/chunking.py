@@ -51,6 +51,7 @@ def split_parents(parents: list[Parent], cfg: ChunkConfig) -> list[Document]:
                 "page_end": p.page_at(end),
                 "source_url": p.source_url,
                 "source_id": p.source_id,          # 골든셋 expected_source_ids와 비교
+                "source_ids": p.source_ids or ([p.source_id] if p.source_id else None),
                 "source_doc_id": p.source_doc_id,
                 "chunk_config": cfg.name,
             }
