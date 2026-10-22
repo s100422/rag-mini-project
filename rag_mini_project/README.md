@@ -1,124 +1,93 @@
-### 금융 문서 기반 RAG Agent 구현 실습
+# 금융 문서 기반 RAG Agent 구현 실습
 
-> 이 저장소의 **구현 요약(PDF 추출 방법, 평가 계획, 결과 그래프, 대시보드 실행법)** 은 [아래](#구현-요약-이-저장소의-결과)에 있다.
+## 📄 문서 안내와 실행 방법
 
-제공된 PDF를 검색하여 근거와 함께 답하는 RAG Agent를 처음부터 구현하세요. 이후 평가 지표와 평가 루프를 직접 만들고, 실험 결과를 바탕으로 Agent를 개선하세요.
+### 1. 문서
 
-### 제공 데이터
-
-| 폴더 | 내용 | 실습에서의 역할 |
-|---|---|---|
-| `01_data/` | 원문 PDF 23개 | 문서 처리·청킹·검색의 대상 |
-| `02_questions/` | 질문 JSON, 총 180문항 | Agent에 입력할 질문 |
-| `03_answers/` | 기준 답안 MD·JSONL | Agent의 답변과 비교할 기준 |
-
-**원문 PDF 구성**
-
-| `01_data/` 안의 경로 | 개수 | 내용 |
-|---|---|---|
-| `financial_glossary_readable.pdf` | 1개 | 금융용어의 정의와 개념 |
-| `standard_terms/` | 15개 | 증권 매매, 신용거래, 연금저축, 전자금융, 해외투자 등 표준약관 |
-| `financial_life_guide.pdf` | 1개 | 재무관리·저축·투자 등 금융생활 설명과 표·그래프 |
-| `additional/` | 6개 | 주택연금, 퇴직연금, 주택 정책금융, 자영업자 채무, 보험약관 예시, 정책서민금융·채무조정 |
-
-### 질문·답안 세트의 범위
-
-| 세트 | 문항 ID · 개수 | 질문 파일 (`02_questions/`) | 답안 파일 (`03_answers/`) | 검색 대상 |
-|---|---|---|---|---|
-| 기본 positive | POS001~POS060 · 60개 | `positive_questions.json` | `positive_cases.md` / `.jsonl` | 용어집 + 표준약관 |
-| 기본 negative | NEG001~NEG040 · 40개 | `negative_questions.json` | `negative_cases.md` / `.jsonl` | 용어집 + 표준약관 |
-| 금융생활 positive | POS061~POS080 · 20개 | `positive_life_guide_questions.json` | `positive_life_guide_cases.md` / `.jsonl` | 금융생활 가이드북 |
-| 추가 문서 positive | ADD-* · 60개 | 문서별 `*_questions.json` | 문서별 `*_answers.md`, 통합 `additional_cases.jsonl` | 추가 PDF 6개 |
-
-**기본 positive 세트**
-
-`positive_questions.json`과 `positive_cases`는 **용어집·표준약관 기반 60문항만** 다룹니다. 금융생활 가이드북과 추가 PDF 6개의 질문은 별도 세트입니다.
-
-**기본 negative 세트**
-
-최신 금리, 개인 계좌 정보, 부족한 계약 조건, 잘못된 전제, 부적절한 요청 등을 다룹니다. 필요한 확인·정정·보류·거절을 수행하는지 확인하세요. 모든 질문을 일괄 거절하는 것이 목적은 아닙니다.
-
-기본 negative의 “자료에 없음”은 **용어집과 표준약관만 검색하는 조건**입니다. 금융생활·추가 PDF까지 검색 대상에 넣으면 답할 수 있는 범위가 달라질 수 있으므로, 기본 세트와 확장 세트의 검색 범위를 구분하세요.
-
-### 필수 구현
-
-| 기능 | 요구사항 |
+| 문서 | 내용 |
 |---|---|
-| 문서 처리 | PDF를 페이지별로 읽고 청킹·임베딩하세요. |
-| 검색 | 검색어를 받아 상위 `k`개 청크와 ID·출처를 반환하는 도구를 구현하세요. |
-| 답변 | 검색 근거로 한국어 답변을 작성하고 파일명과 페이지를 표시하세요. |
-| 근거 판단 | 검색 결과로 질문에 답할 수 있는지 판단하세요. |
-| Agent 설계 | Agent의 판단·행동 흐름과 종료 조건을 직접 설계하고 구현하세요. |
-| 실행 결과 저장 | 문항 ID, 질문, 답변, 검색한 청크 ID와 근거 내용, 실행 시간 등을 DB 또는 JSON 파일에 저장하세요. |
+| `experiment_plan.md` | 실험 계획: 평가 세트, 기준 설정(B0), 지표, 비교 실험(E1~E8) 가설, 최종 설정 선택 기준, 진행 순서 |
+| `experiment_results.md` | 실험 결과: 검색 단계·답변 단계 표, 아이디어별 해석, 실패 사례 분석, 잠정 선택, 한계 |
+| `experiment_results_emb2.md` | 같은 실험을 임베딩 gemini-embedding-2로 다시 돌린 결과와 001 비교(결과 `results_emb2/`, 표는 `rag/compare_embeddings.py`). 환경변수 `EMBEDDING_MODEL`·`CHROMA_DIR`·`RAG_RESULTS_DIR`만 바꾸면 같은 명령으로 재현 |
+| `make_figures.py`, `img/` | README의 결과 그래프(PNG 4장)와 이를 만드는 스크립트(`python docs/make_figures.py`) |
+| `experiment_results_agent_v2.md` | E3-b 위에서 Agent를 개선한 실험(A1·A2·A3, 프롬프트 대조군 C0): 결과, 해석, Agent 구성 판단. 옵션 `--agent-options v2=1,analyze_model=...`, `--rag-prompt v2` |
+| `chatbot/` | 사용자가 문서에 대해 질문하는 챗봇(streamlit). 백엔드 `chatbot/core.py`(최종 설정), 화면 `chatbot/app.py`. 실행은 README '챗봇으로 질문하기' |
+| `dashboard/` | 평가 결과 대시보드(streamlit). 개요·검색 단계·답변 비교·비용 대비 품질·반복 오차·문항 탐색·임베딩 비교 탭. 실행은 아래 '결과 보기' |
+| `experiment_records.md` | 결과를 어떻게 저장·비교하는지: 폴더 구조, config·문항별 결과 스키마, 지표 정의, 비교 도구 |
+| `agent_graph.md` | Agent(검색 재시도형) 그래프 구조도: 노드, 분기, 종료 조건, 요소 끄기(ablation) |
+| `인수인계서.md` | **다른 AI에게 넘기는 문서**: 현재 상태, 남은 일, 사용자 선호, 환경, 함정 |
+| `회고.md` | 겪은 문제와 개선 방안 |
+| `progress.md` | **진행 기록**: 끝낸 것, 결론, 남은 것, 평가를 더 돌릴 때 |
+| `answer_tables.md` | 답변 단계 설정별 결과 표(`python -m rag.report --md`로 생성) |
+| `plan_extract_p4l_fixes.md` | PDF → md 추출 개선 계획(추출 단계 기록) |
 
-### 평가 루프 구현
+### 2. 코드 구성
 
-**평가 데이터 준비**
-
-사용할 질문 세트와 검색 대상 PDF를 정하고, `case_id`로 질문과 기준 답안을 연결하세요. 검색 평가에 필요한 근거 구절·파일명·페이지는 PDF 원문과 대조해 확인하세요.
-
-**골든셋 직접 만들기**
-
-제공된 질문·답안을 참고하여 선택한 PDF를 바탕으로 새로운 질문과 기준 답변을 직접 작성하세요.
-
-- 용어 정의, 조건 비교, 표 해석 등 서로 다른 유형의 질문을 구성하세요.
-- 질문·기준 답변·근거 구절·파일명·페이지를 기록하고 PDF 원문과 대조해 검수하세요.
-- 문서만으로 답할 수 없는 질문도 작성하고, 답할 수 없는 이유와 기대하는 확인·보류 등의 대응을 기록하세요.
-
-직접 만든 골든셋은 제공 세트와 구분해 평가하세요. 질문과 기준 답안은 검색 DB에 넣지 마세요.
-
-**평가 루프**
-
-질문 실행 → 검색 근거·답변·시간 저장 → 직접 정한 지표로 평가 → 실패 원인 분석 → 설정 개선 → 같은 질문으로 재평가하는 흐름을 구현하세요. 검색에서 근거를 놓친 경우와, 근거를 찾았지만 답변을 잘못 작성한 경우를 구분하세요.
-
-**실험 결과 기록 설계**
-
-실험 전에 어떤 결과를 어떤 형식으로 저장하고 비교할지 직접 정하세요. 실험 ID를 기준으로 사용한 설정, 문항별 실행 결과와 평가 점수, 전체 요약 결과를 연결해 확인할 수 있도록 구성하세요.
-
-설정에는 모델명·버전, 프롬프트, 청킹·검색 설정과 기준 설정 대비 변경 사항 등 결과 해석과 재실행에 필요한 정보를 포함하세요.
-
-**비교 실험**
-
-| 비교 대상 | 실험 내용 |
+| 파일 | 역할 |
 |---|---|
-| 청킹 | 서로 다른 청킹 전략의 결과를 비교하세요. |
-| 검색 | 서로 다른 검색 전략의 결과를 비교하세요. |
-| 기본 RAG와 Agent | 기본 RAG와 직접 설계한 Agent의 성능을 비교하세요. |
+| `extract/` | PDF → md 추출(pymupdf4llm, 표·그림은 vision 모델) |
+| `rag/md_parser.py`, `rag/doc_chunking.py`, `rag/chunking.py` | md 읽기와 청킹 전략(Recursive, 구조 단위, parent-child, 제목 접두어, 표 보존) |
+| `rag/build_index.py`, `rag/chroma_store.py`, `rag/pg_store.py` | 색인: 청크는 Chroma, parent 원문은 Postgres |
+| `rag/retrievers.py`, `rag/search.py` | 검색(similarity, MMR, BM25, hybrid), 터미널 시험 |
+| `rag/evaluate.py` | 검색 단계 평가 |
+| `rag/rag.py`, `rag/agent.py`, `rag/llm.py` | 기본 RAG, Agent, Gemini 호출(재시도·차단 처리·LangSmith 추적) |
+| `rag/judge.py`, `rag/answer_eval.py` | 답변 판정, 답변 단계 평가(RAG·Agent) |
+| `rag/experiment.py` | 실험 기록 공통 코드 |
+| `rag/compare.py`, `rag/report.py`, `rag/failure_analysis.py`, `rag/human_sheet.py` | 비교, 반복 평균 집계, 실패 분류, 사람 대조 시트 |
 
-**실험 아이디어**
+### 3. 준비
 
-문서의 특성과 실패 사례를 바탕으로 필요한 실험을 선택하세요. **기준 설정을 먼저 정하고, 각 비교 실험에서는 기준 설정 대비 하나의 요소만 변경하세요.** 질문 세트, 검색 대상 PDF, 나머지 설정과 평가 방법은 동일하게 유지하세요.
+- 상위 폴더 `.env`에 `GOOGLE_API_KEY`, `POSTGRES_*`, `RAG_POSTGRES_DB`, `CHROMA_DIR`, (선택) `LANGSMITH_*`를 둔다.
+  Chroma는 경로에 한글이 있으면 1,000개 넘는 컬렉션의 인덱스를 못 쓰므로 `CHROMA_DIR`는 한글이 없는 경로(예: `C:/rag_data/chroma_db`)여야 한다.
+- `pip install -r requirements.txt`, Postgres 실행.
 
-예를 들어 청크 크기를 비교할 때는 겹침 범위와 검색 개수(`k`)를 고정하고, `k`를 비교할 때는 청킹 설정을 고정하세요. 실험마다 기준 설정, 변경한 요소와 값, 결과를 기록하세요.
+### 4. 색인 만들기 (컬렉션)
 
-단, 기본 RAG와 Agent처럼 여러 구성 요소가 함께 달라지는 비교에서는 변경 내역을 모두 기록하고, 결과를 전체 구성의 효과로 해석하세요. 특정 요소가 개선의 원인이라고 판단하려면 해당 요소만 바꾸는 별도 실험으로 확인하세요.
+```bash
+# 기준 B0: 문서 전체를 Recursive 500/50으로
+python -m rag.build_index --doc-type standard_terms glossary --strategy recursive --collection base_rec_c500_o50
+python -m rag.build_index --doc-type life_guide additional_p4l --strategy recursive --collection extended_rec_c500_o50
+# 구조 단위 / parent-child / 제목 접두어 / 표 보존
+python -m rag.build_index --doc-type standard_terms glossary --strategy structure --collection base_struct_c500_o50
+python -m rag.build_index --doc-type standard_terms glossary --strategy parent-child --collection base_pc_c500_o50
+python -m rag.build_index --doc-type standard_terms glossary --strategy recursive --title-prefix --collection base_rec_title_c500_o50
+python -m rag.build_index --doc-type life_guide additional_p4l --strategy recursive --table-aware --collection extended_rec_table_c500_o50
+```
 
-- **청크 크기와 겹침:** 청크 크기나 겹침 범위를 바꿨을 때 필요한 근거가 잘리거나 불필요한 내용이 함께 검색되는지 확인하세요.
-- **문서 구조에 맞는 청킹:** Recursive 청킹과 함께 금융용어집은 용어·정의 단위, 약관은 조항 단위, 가이드북은 제목·문단 단위로 나누는 방법을 비교하세요.
-- **문맥 보존:** 청크에 문서 제목이나 상위 제목을 붙이거나, 표의 단위·각주를 함께 유지했을 때 답변이 달라지는지 확인하세요.
-- **질문 유형별 검색:** 벡터 검색, BM25, Hybrid Search 등을 활용해 정확한 금융용어를 묻는 질문과 상황을 풀어 설명한 질문에서 어떤 방식이 잘 맞는지 비교하세요.
-- **검색 결과의 양과 구성:** 검색 개수(`k`)를 바꾸거나 MMR 등을 적용했을 때 필요한 근거와 중복·불필요한 정보가 어떻게 달라지는지 확인하세요.
-- **Agent 구조의 효과:** 질문 유형에 따라 직접 설계한 Agent가 기본 RAG와 비교해 어떤 장단점을 보이는지 확인하세요.
+### 5. 평가 실행
 
-**평가 지표**
+```bash
+# 검색 단계(기준 실험 → 비교 실험은 --baseline)
+python -m rag.evaluate --name B0-base --collection base_rec_c500_o50 --methods similarity
+python -m rag.evaluate --name E5-base --collection base_rec_c500_o50 --methods bm25 hybrid --baseline <B0 실험 ID>
 
-검색 정확도, 답변 품질, 근거 준수, 응답 시간 등 실습에 적합한 평가 지표와 측정 방법을 직접 선정하고 구현하세요. 비교할 때는 질문 세트와 검색 대상 PDF를 동일하게 유지하세요.
+# 답변 단계: 기본 RAG, Agent, k 변경, Agent 요소 끄기
+python -m rag.answer_eval --name B0-base --collection base_rec_c500_o50
+python -m rag.answer_eval --name E3-b-base --collection base_pc_c500_o50 --baseline <B0 실험 ID>
+python -m rag.answer_eval --name E6-a-base --collection base_rec_c500_o50 --baseline <B0 실험 ID> --k 3
+python -m rag.answer_eval --mode agent --name E7-base --collection base_rec_c500_o50 --baseline <B0 실험 ID>
+python -m rag.answer_eval --mode agent --agent-options retry=0 --name E7a-base --collection base_rec_c500_o50 --baseline <B0 실험 ID>
 
-기본 RAG와 Agent를 비교할 때는 답변 품질·응답 시간과 함께 모델 호출 수, 검색 횟수, 입력·출력 토큰 사용량을 기록하세요. 문항별 전체 실행에서 발생한 사용량을 합산하고, 추가 자원 사용에 비해 품질이 얼마나 개선되는지 함께 분석하세요.
+# 시험 실행(앞 5문항, 정식 기록과 따로 저장)
+RAG_RESULTS_DIR=/tmp/trial python -m rag.answer_eval --name smoke --collection base_rec_c500_o50 --limit 5
+```
 
-비교 결과와 최종 설정의 선택 이유, 실패 사례와 개선점을 정리하세요.
+답변 평가 한 번은 기본 세트 약 7분, 확장 세트 약 6분(문항 6개 동시 처리)이다. 판정 대기가 대부분이라 `--workers 16`으로 올리고 여러 평가를 동시에 돌리면 더 빠르다(응답 시간 열은 동시 처리 수가 다르면 비교할 수 없다). 문항 하나가 15분 안에 끝나지 않으면 오류로 기록하고 넘어간다.
 
-### 제출물
+### 6. 결과 보기
 
-- RAG 실험 계획: 실험 목적·가설, 사용할 PDF·질문 세트, 비교할 설정과 고정할 조건, 평가 지표·측정 방법, 결과 기록 항목·저장 형식·비교 방법
-- Agent 그래프 구조도: 각 노드의 역할, 노드 간 흐름과 분기, 종료 조건
-- RAG Agent와 평가 루프 구현 코드, 실행 방법
-- 사용한 PDF·질문 세트와 직접 작성·검수한 골든셋(기준 답변·근거 포함)
-- 실행 기록, 비교 실험 결과, 실패 사례와 개선점
+```bash
+streamlit run dashboard/app.py            # 대시보드(results/, results_emb2/를 읽기만 한다)
+python -m rag.report                      # 설정별 평균과 [최소–최대]
+python -m rag.report --runs               # 설정별 실험 ID
+python -m rag.compare --baseline-of <ID>  # 기준 대비 차이
+python -m rag.failure_analysis <ID>       # 실패 원인 분류
+python -m rag.human_sheet make <기본 B0 ID> <확장 B0 ID>   # 사람 대조 시트
+python -m rag.human_sheet compare         # 채점한 시트와 판정 모델의 일치율
+```
 
----
 
-## 구현 요약 (이 저장소의 결과)
+## 📜 구현 요약 (이 저장소의 결과)
 
 위는 과제 안내이고, 아래는 이 저장소에서 실제로 한 일을 짧게 정리한 것이다. 자세한 내용은 [`docs/README.md`](docs/README.md)의 문서 목록에서 찾는다.
 
@@ -254,3 +223,21 @@ streamlit run rag_mini_project/chatbot/app.py
 - 답변의 `[1]` 같은 번호는 "근거 보기"의 항목 번호다. 인용된 근거와 검색만 된 근거를 구분해서 보여 준다.
 - 준비물: Postgres 실행, 상위 폴더 `.env`(API 키, DB, `CHROMA_DIR`), 색인된 컬렉션(`base_pc_c500_o50`, `extended_pc_c500_o50`).
 - 한계: 각 질문을 독립적으로 처리한다(앞선 대화를 기억하지 않는다). 평가에서는 기본·확장 문서 묶음을 따로 검색했지만 챗봇은 합쳐서 검색한다(합친 조건은 평가하지 않았다). 답변 한 번에 약 5~9초 걸린다(모델 호출 2회).
+
+## 📓 실습 회고
+
+### 1. 잘 된 것
+
+- 기준(B0)을 먼저 정하고 한 요소만 바꿔서, 결과 차이를 원인 하나에 연결할 수 있었다.
+- 같은 설정을 반복해 평가 오차(pass ±4~6%p)를 쟀고, 그 안쪽 차이를 효과로 착각하지 않았다.
+- 기록을 실험 ID로 연결하고 기준 대비 바뀐 설정을 자동으로 남겼다.
+
+### 2. 문제점과 개선 방안
+
+| 항목 | 문제 | 원인 | 해 본 것 | 개선 방법 | 고르지 않은 방법 |
+|---|---|---|---|---|---|
+| 1. 글자층(text)과 vision 중 어느 쪽으로 읽을지 | 글자층만 쓰면 그래프 값이 통째로 빠진다(주택연금 85쪽). 줄이 섞이는 곳도 있다(7쪽 단기/중기/장기 카드가 줄 단위로 뒤섞임) | 한 방법으로는 영역마다 다른 성질을 못 맞춘다. 카드·도식은 글자 순서가 좌우로 섞인다 | 글자층 추출에 쪽 전체 이미지를 vision으로 읽어 덧붙였다. 값은 나왔지만 쪽 전체가 한 장의 사진으로 들어가고 설명 박스가 중복됐다 | 영역을 설명 박스(글자층 그대로), 도식·목록(vision), 장식(제목만)으로 나눈다(`classify_picture`). vision이 읽은 양이 영역 단어의 80% 미만이면 그 영역만 잘라 다시 읽고, 기존 vision 블록을 품으면 대체한다. 글자 상자도 줄이 나란한 카드(6줄 이상, 60% 이상)면 도식으로 본다(7쪽 해결). 블록마다 읽은 방법(`source`)을 남긴다 | 쪽 전체를 vision으로 대체(비용, 글자 오류 위험), 글자층만 사용(그래프 값 누락) |
+| 2. 그림이 쪽 맨 끝에 붙던 문제 | 그림이 원래 제목에서 떨어져, 제목 아래에는 그림이 없고 그림은 엉뚱한 제목 밑에 있다. 청킹이 제목 단위라 검색 근거가 틀어진다 | 블록에 위치 정보가 없었고 vision 결과를 쪽 끝에 "추가"만 했다. 처음에 "쪽 끝에 붙이면 된다"고 대충 넘어가서 문서 전체를 다시 추출했다 | vision 결과를 쪽 끝에 이어 붙여 추출했다. 그림이 제자리 제목으로 돌아가지 않는다는 지적을 받고 문서 전체를 다시 추출했다 | 상자마다 읽는 순서 번호(`order`)를 두고, vision이 준 좌표(0~1000)를 쪽 좌표로 바꿔 가장 가까운 상자 뒤에 넣는다(`anchor_order`). 그림 앞 본문은 그림 자리에서 끊고(`flush_text`), 순서 번호로 정렬하되 각주만 쪽 끝으로 보낸다 | 쪽 끝에 그대로 붙이기(청킹 근거가 틀어짐) |
+| 3. 2단 문서를 좌우 구분 없이 읽던 문제 | 주택정책금융·보험약관·자영업 부채 PDF가 좌우 단을 한 줄씩 번갈아 읽혀 문장이 끊기고 섞인다 | pymupdf4llm 상자 순서가 위→아래였고 단 경계를 보지 않았다. 계획에 있었는데도 반영이 안 됐고, 검증을 표본 몇 쪽으로만 하고 "됐다"고 판단했다 | 첫 추출과 재추출에서도 같은 문제가 남아 있었다. 고친 뒤에는 쪽별 개요 파일로 제목 순서를 전부 확인했다 | 쪽 너비 30~70%에서 6pt 이상 빈 띠로 단 경계를 정하고, 쪽 너비 55%보다 좁은 상자만 단 상자로 보아 왼쪽 단을 다 읽은 뒤 오른쪽 단을 읽는다(`reorder_columns`). 단에 걸친 넓은 상자는 순서 경계로 쓴다. `column_sequence`와 `logs/outline_*.txt`로 확인한다 | 쪽을 HTML로 바꿔 읽기(과하다고 판단) |
+| 4. 그림 이미지가 쪽 전체로 저장되던 문제 | 블록에 연결된 이미지가 그림만 잘린 것이 아니라 PDF 쪽 한 장이 통째로 들어갔다(퇴직연금 2쪽). 어느 그림인지 구분이 안 되고 이미지를 확인하기 어렵다 | 새 파이프라인이 쪽 전체 이미지를 vision에 보내고 그 이미지를 그대로 연결했다. 그림 좌표(box)가 없거나 너무 작을 때도 쪽 전체로 되돌렸다 | 처음 pdfplumber 버전에서는 그림만 잘라 저장했다. 이번에는 개선 방법 1번(vision이 준 좌표로 자르기)으로 바꿨다 | vision이 준 box 좌표(0~1000)를 쪽 좌표로 바꾸고 여백(쪽 크기의 1.5%)을 두어 그림만 잘라 저장한다(`crop=region`). 도식 영역은 영역만 잘라 다시 읽는다. 좌표가 쪽의 1%보다 작아 믿을 수 없을 때만 쪽 전체를 쓰고 `crop=page`로 표시한다 | 쪽 전체 이미지를 그대로 연결하기(그림 구분이 안 됨) |
+| 5. 실행 시간이 오래 걸림 | 답변 평가 한 번이 약 7분이다. 처음 13개 설정이 약 2시간 40분 걸렸고, 남은 10개도 순차로 약 70분이다 | 시간 대부분이 판정 모델 대기다(문항당 약 17초, 검색 1.5초·생성 4초). 문항을 6개씩만 동시에 처리하고 평가는 순서대로 돌렸다 | 평가를 세 줄로 나눠 동시에 실행했다. 실행당 시간이 거의 늘지 않았다(약 7.4분 → 약 8분) | 동시 처리 수를 6 → 16(`--workers 16`)으로 올리고 세 줄로 나눠 동시에 실행한다. 병목이 API 응답 대기라 동시 수에 비례해 빨라진다. 남은 10개가 70분 → 10~25분일 것으로 본다(추정, 아직 실행해 보지 않음) | asyncio(대기가 병목이라 스레드와 효과가 같음), Gemini Batch API(결과가 수 시간 걸릴 수 있음, 확인하지 않음), 판정 모델의 생각 줄이기(이전 실험과 채점 기준이 달라짐) |
