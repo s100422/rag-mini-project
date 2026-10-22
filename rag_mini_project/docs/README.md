@@ -7,6 +7,7 @@
 | `experiment_plan.md` | 실험 계획: 평가 세트, 기준 설정(B0), 지표, 비교 실험(E1~E8) 가설, 최종 설정 선택 기준, 진행 순서 |
 | `experiment_results.md` | 실험 결과: 검색 단계·답변 단계 표, 아이디어별 해석, 실패 사례 분석, 잠정 선택, 한계 |
 | `experiment_results_agent_v2.md` | E3-b 위에서 Agent를 개선한 실험(A1·A2·A3, 프롬프트 대조군 C0): 결과, 해석, Agent 구성 판단. 옵션 `--agent-options v2=1,analyze_model=...`, `--rag-prompt v2` |
+| `dashboard/` | 평가 결과 대시보드(streamlit). 개요·검색 단계·답변 비교·비용 대비 품질·반복 오차·문항 탐색·임베딩 비교 탭. 실행은 아래 '결과 보기' |
 | `experiment_records.md` | 결과를 어떻게 저장·비교하는지: 폴더 구조, config·문항별 결과 스키마, 지표 정의, 비교 도구 |
 | `agent_graph.md` | Agent(검색 재시도형) 그래프 구조도: 노드, 분기, 종료 조건, 요소 끄기(ablation) |
 | `인수인계서.md` | **다른 AI에게 넘기는 문서**: 현재 상태, 남은 일, 사용자 선호, 환경, 함정 |
@@ -71,6 +72,7 @@ RAG_RESULTS_DIR=/tmp/trial python -m rag.answer_eval --name smoke --collection b
 ## 결과 보기
 
 ```bash
+streamlit run dashboard/app.py            # 대시보드(results/, results_emb2/를 읽기만 한다)
 python -m rag.report                      # 설정별 평균과 [최소–최대]
 python -m rag.report --runs               # 설정별 실험 ID
 python -m rag.compare --baseline-of <ID>  # 기준 대비 차이
