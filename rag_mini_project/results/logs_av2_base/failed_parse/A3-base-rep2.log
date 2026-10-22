@@ -1,0 +1,9 @@
+usage: answer_eval.py [-h] [--name NAME] [--note NOTE] [--baseline BASELINE]
+                      [--mode {rag,agent}] [--collection COLLECTION]
+                      [--method {similarity,mmr,bm25,hybrid}] [--k K]
+                      [--fetch-k FETCH_K] [--lambda-mult LAMBDA_MULT]
+                      [--weight-vector WEIGHT_VECTOR] [--workers WORKERS]
+                      [--limit LIMIT] [--cases CASES]
+                      [--agent-options AGENT_OPTIONS] [--rag-prompt {v1,v2}]
+answer_eval.py: error: unrecognized arguments: A2에서 분석 노드만 gemini-3.1-flash-lite
+exit 2

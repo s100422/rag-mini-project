@@ -1,0 +1,19 @@
+documents: 7, chars 392,410
+parents: 427
+saved 427 parents -> postgres RAG_AGENT_PRACTICE.parents
+chunks (c500_o50): 1204, len median 379, max 499, chunks over 2+ sources: 67
+  embedded 100/1204
+  embedded 200/1204
+  embedded 300/1204
+  embedded 400/1204
+  embedded 500/1204
+  embedded 600/1204
+  embedded 700/1204
+  embedded 800/1204
+  embedded 900/1204
+  embedded 1000/1204
+  embedded 1100/1204
+  embedded 1200/1204
+  embedded 1204/1204
+saved 1204 chunks -> chroma C:\rag_data\chroma_db_emb2 [extended_pc_c500_o50]
+exit 0

@@ -1,0 +1,11 @@
+done 20261022_101002_retrieval_E2-b-extended-similarity  changes: chunking.chunk_overlap: 50→100
+
+retriever              hit@1           hit@3           hit@5          hit@10        recall@3        recall@5       recall@10             mrr  latency_ms_p50
+similarity             0.725           0.900           0.938           0.963           0.745           0.810           0.893           0.814             875
+
+by difficulty (recall@5 / mrr)
+  similarity  advanced=0.75/0.81 (n=38)  basic=0.84/0.83 (n=17)  intermediate=0.88/0.82 (n=25)
+
+sweep 20261022_101002_E2-b-extended -> C:\Users\tnwls\OneDrive\문서\rag-mini-project\rag_mini_project\results_emb2\runs
+exit 0
+exit 0

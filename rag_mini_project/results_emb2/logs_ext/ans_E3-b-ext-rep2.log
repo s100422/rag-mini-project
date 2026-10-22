@@ -1,0 +1,9 @@
+Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+  20/80
+  40/80
+  60/80
+  80/80
+done 20261022_103910_rag_E3-b-ext-rep2-similarity  changes: chunking.result_unit: chunk→parent; chunking.strategy: recursive→parent-child; chunking.unit: 문서 전체→약관=조항, 용어집=용어, 가이드북=제목 구간, 추가 문서=쪽
+n=80 errors=0 blocked=0 pass=0.7 정확도=0.8594 금지위반=0.0 근거준수=0.9938 행동일치=0.125/0.975 인용 P/R=0.6902/0.7781 hit@5=0.95 토큰(in/out)=4657.3875/231.625 p50=5111.5ms 소요 217s
+exit 0

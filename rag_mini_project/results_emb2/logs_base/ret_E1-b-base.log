@@ -1,0 +1,9 @@
+done 20261022_101709_retrieval_E1-b-base-similarity  changes: chunking.chunk_size: 500→800
+
+retriever              hit@1           hit@3           hit@5          hit@10        recall@3        recall@5       recall@10             mrr  latency_ms_p50
+similarity             0.265           0.412           0.515           0.574           0.301           0.395           0.474           0.366             859
+
+by difficulty (recall@5 / mrr)
+  similarity  advanced=0.36/0.53 (n=20)  adversarial=0.25/0.25 (n=4)  basic=0.25/0.17 (n=20)  intermediate=0.57/0.42 (n=24)
+
+sweep 20261022_101709_E1-b-base -> C:\Users\tnwls\OneDrive\문서\rag-mini-project\rag_mini_project\results_emb2\runs

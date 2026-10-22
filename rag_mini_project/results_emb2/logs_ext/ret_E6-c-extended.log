@@ -1,0 +1,10 @@
+done 20261022_100333_retrieval_E6-c-extended-mmr  changes: retrieval.method: similarity→mmr
+
+retriever              hit@1           hit@3           hit@5          hit@10        recall@3        recall@5       recall@10             mrr  latency_ms_p50
+mmr                    0.775           0.875           0.925           0.963           0.751           0.834           0.900           0.836            1290
+
+by difficulty (recall@5 / mrr)
+  mmr         advanced=0.80/0.81 (n=38)  basic=0.93/0.86 (n=17)  intermediate=0.83/0.86 (n=25)
+
+sweep 20261022_100333_E6-c-extended -> C:\Users\tnwls\OneDrive\문서\rag-mini-project\rag_mini_project\results_emb2\runs
+exit 0

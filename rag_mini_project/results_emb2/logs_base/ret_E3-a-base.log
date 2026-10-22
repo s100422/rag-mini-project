@@ -1,0 +1,9 @@
+done 20261022_101058_retrieval_E3-a-base-similarity  changes: chunking.strategy: recursive→structure; chunking.unit: 문서 전체→약관=조항, 용어집=용어, 가이드북=제목 구간, 추가 문서=쪽
+
+retriever              hit@1           hit@3           hit@5          hit@10        recall@3        recall@5       recall@10             mrr  latency_ms_p50
+similarity             0.779           0.956           0.985           0.985           0.838           0.909           0.949           0.867             847
+
+by difficulty (recall@5 / mrr)
+  similarity  advanced=0.77/0.91 (n=20)  adversarial=1.00/0.75 (n=4)  basic=1.00/0.94 (n=20)  intermediate=0.94/0.79 (n=24)
+
+sweep 20261022_101058_E3-a-base -> C:\Users\tnwls\OneDrive\문서\rag-mini-project\rag_mini_project\results_emb2\runs

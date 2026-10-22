@@ -1,0 +1,15 @@
+documents: 7, chars 392,410
+chunks (c500_o0): 1005, len median 431, max 499, chunks over 2+ sources: 233
+  embedded 100/1005
+  embedded 200/1005
+  embedded 300/1005
+  embedded 400/1005
+  embedded 500/1005
+  embedded 600/1005
+  embedded 700/1005
+  embedded 800/1005
+  embedded 900/1005
+  embedded 1000/1005
+  embedded 1005/1005
+saved 1005 chunks -> chroma C:\rag_data\chroma_db_emb2 [extended_rec_c500_o0]
+exit 0

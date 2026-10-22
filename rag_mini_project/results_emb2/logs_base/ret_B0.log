@@ -1,0 +1,9 @@
+done 20261022_100519_retrieval_B0-base-similarity
+
+retriever              hit@1           hit@3           hit@5          hit@10        recall@3        recall@5       recall@10             mrr  latency_ms_p50
+similarity             0.426           0.559           0.691           0.721           0.438           0.592           0.648           0.516             837
+
+by difficulty (recall@5 / mrr)
+  similarity  advanced=0.58/0.72 (n=20)  adversarial=0.75/0.62 (n=4)  basic=0.45/0.28 (n=20)  intermediate=0.69/0.53 (n=24)
+
+sweep 20261022_100519_B0-base -> C:\Users\tnwls\OneDrive\문서\rag-mini-project\rag_mini_project\results_emb2\runs

@@ -1,0 +1,9 @@
+done 20261022_101650_retrieval_E3-b-base-similarity  changes: chunking.result_unit: chunk→parent; chunking.strategy: structure→parent-child
+
+retriever              hit@1           hit@3           hit@5          hit@10        recall@3        recall@5       recall@10             mrr  latency_ms_p50
+similarity             0.779           0.956           0.985           0.985           0.838           0.922           0.956           0.868             875
+
+by difficulty (recall@5 / mrr)
+  similarity  advanced=0.81/0.91 (n=20)  adversarial=1.00/0.75 (n=4)  basic=1.00/0.94 (n=20)  intermediate=0.94/0.80 (n=24)
+
+sweep 20261022_101650_E3-b-base -> C:\Users\tnwls\OneDrive\문서\rag-mini-project\rag_mini_project\results_emb2\runs

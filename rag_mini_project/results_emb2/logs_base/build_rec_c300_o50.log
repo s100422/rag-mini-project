@@ -1,0 +1,13 @@
+documents: 16, chars 190,238
+chunks (c300_o50): 908, len median 234, max 299, chunks over 2+ sources: 339
+  embedded 100/908
+  embedded 200/908
+  embedded 300/908
+  embedded 400/908
+  embedded 500/908
+  embedded 600/908
+  embedded 700/908
+  embedded 800/908
+  embedded 900/908
+  embedded 908/908
+saved 908 chunks -> chroma C:\rag_data\chroma_db_emb2 [base_rec_c300_o50]

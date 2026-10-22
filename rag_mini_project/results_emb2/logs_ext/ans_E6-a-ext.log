@@ -1,0 +1,9 @@
+Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+  20/80
+  40/80
+  60/80
+  80/80
+done 20261022_102347_rag_E6-a-ext-similarity  changes: eval.ks: [5]→[3]; retrieval.depth: 5→3; retrieval.k: 5→3
+n=80 errors=0 blocked=0 pass=0.525 정확도=0.7354 금지위반=0.0 근거준수=0.9821 행동일치=0.125/0.9 인용 P/R=0.7799/0.701 hit@3=0.8875 토큰(in/out)=1306/202.35 p50=4798.0ms 소요 315s
+exit 0

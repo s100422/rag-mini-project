@@ -1,0 +1,10 @@
+done 20261022_100334_retrieval_E5-a-extended-bm25  changes: retrieval.method: similarity→bm25
+
+retriever              hit@1           hit@3           hit@5          hit@10        recall@3        recall@5       recall@10             mrr  latency_ms_p50
+bm25                   0.613           0.762           0.812           0.900           0.635           0.723           0.829           0.706             237
+
+by difficulty (recall@5 / mrr)
+  bm25        advanced=0.71/0.73 (n=38)  basic=0.67/0.61 (n=17)  intermediate=0.78/0.73 (n=25)
+
+sweep 20261022_100334_E5-a-extended -> C:\Users\tnwls\OneDrive\문서\rag-mini-project\rag_mini_project\results_emb2\runs
+exit 0

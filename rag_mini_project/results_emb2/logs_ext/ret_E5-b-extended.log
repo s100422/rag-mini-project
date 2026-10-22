@@ -1,0 +1,10 @@
+done 20261022_100333_retrieval_E5-b-extended-hybrid  changes: retrieval.method: similarity→hybrid
+
+retriever              hit@1           hit@3           hit@5          hit@10        recall@3        recall@5       recall@10             mrr  latency_ms_p50
+hybrid                 0.800           0.900           0.963           0.988           0.753           0.887           0.929           0.858             835
+
+by difficulty (recall@5 / mrr)
+  hybrid      advanced=0.88/0.90 (n=38)  basic=0.91/0.80 (n=17)  intermediate=0.88/0.83 (n=25)
+
+sweep 20261022_100333_E5-b-extended -> C:\Users\tnwls\OneDrive\문서\rag-mini-project\rag_mini_project\results_emb2\runs
+exit 0
