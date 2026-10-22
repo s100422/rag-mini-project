@@ -188,7 +188,8 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--limit", type=int, default=0, help="앞 N문항만(시험)")
     ap.add_argument("--cases", default="", help="이 문항들만(쉼표로 구분, 시험)")
-    ap.add_argument("--agent-options", default="", help="Agent 요소 끄기(ablation): retry=0 등, 쉼표로 구분")
+    ap.add_argument("--agent-options", default="", help="Agent 요소 끄기(ablation): retry=0 등, 쉼표로 구분. v2=1, analyze_model=<모델 ID>도 가능")
+    ap.add_argument("--rag-prompt", default="v1", choices=["v1", "v2"], help="기본 RAG 프롬프트(v2 = Agent v2의 답변 요구사항을 항상 켠 대조군)")
     args = ap.parse_args()
 
     retriever = Retriever(args.collection)
@@ -205,8 +206,10 @@ def main() -> None:
 
     if args.mode == "agent":
         from . import agent
-        run_fn, gen_settings, prompts = agent.make_runner(args.agent_options), agent.settings(args.agent_options), agent.PROMPTS
+        run_fn, gen_settings, prompts = agent.make_runner(args.agent_options), agent.settings(args.agent_options), agent.prompts(args.agent_options)
     else:
+        if args.rag_prompt == "v2":  # run_rag가 호출 때 모듈의 SYSTEM_PROMPT를 읽으므로 여기서 바꾼다
+            rag.SYSTEM_PROMPT, rag.PROMPT_VERSION = rag.SYSTEM_PROMPT_V2, "v2"
         run_fn = rag.run_rag
         gen_settings = {"mode": "rag", "model": GEN_MODEL, "temperature": 0.0, "thinking_budget": rag.THINKING_BUDGET,
                         "max_output_tokens": rag.MAX_OUTPUT_TOKENS, "prompt_version": rag.PROMPT_VERSION,

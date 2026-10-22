@@ -17,10 +17,12 @@ from collections import defaultdict
 from .experiment import RUNS
 
 NAME_RE = re.compile(r"^\d{8}_\d{6}_(rag|agent)_(.+?)-similarity$")
-ORDER = ["B0", "E3-a", "E3-b", "E4-a", "E4-b", "E6-a", "E6-b", "E8a", "E8b", "E7", "E7a", "E7b"]
+ORDER = ["B0", "E3-a", "E3-b", "E4-a", "E4-b", "E6-a", "E6-b", "E8a", "E8b", "E7", "E7a", "E7b", "C0", "A1", "A2", "A3", "A4"]
 LABEL = {"B0": "B0 기준(Recursive 500/50, k=5)", "E3-a": "E3-a 구조 단위", "E3-b": "E3-b 구조 + parent-child",
          "E4-a": "E4-a 제목 접두어", "E4-b": "E4-b 표 보존", "E6-a": "E6-a k=3", "E6-b": "E6-b k=10",
-         "E8a": "E8a 합침: E3-b + k=3", "E8b": "E8b 합침: E3-b + k=10", "E7": "E7 Agent 전체", "E7a": "E7a Agent: 재검색 끔", "E7b": "E7b Agent: 질문 분석·분기 끔"}
+         "E8a": "E8a 합침: E3-b + k=3", "E8b": "E8b 합침: E3-b + k=10", "E7": "E7 Agent 전체", "E7a": "E7a Agent: 재검색 끔", "E7b": "E7b Agent: 질문 분석·분기 끔",
+         "C0": "C0 대조군: E3-b + 프롬프트 v2(Agent 없음)", "A1": "A1 E3-b + Agent(재검색 끔)",
+         "A2": "A2 E3-b + Agent v2(답변 요구사항)", "A3": "A3 A2 + 분석 노드 flash-lite", "A4": "A4 Agent v2 + 프롬프트 v2"}
 KEYS = ["pass", "must_include_rate", "coarse_match", "faithfulness", "citation_precision", "citation_recall",
         "unsupported_claims", "blocked"]
 
