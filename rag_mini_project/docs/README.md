@@ -6,6 +6,8 @@
 |---|---|
 | `experiment_plan.md` | 실험 계획: 평가 세트, 기준 설정(B0), 지표, 비교 실험(E1~E8) 가설, 최종 설정 선택 기준, 진행 순서 |
 | `experiment_results.md` | 실험 결과: 검색 단계·답변 단계 표, 아이디어별 해석, 실패 사례 분석, 잠정 선택, 한계 |
+| `experiment_results_emb2.md` | 같은 실험을 임베딩 gemini-embedding-2로 다시 돌린 결과와 001 비교(결과 `results_emb2/`, 표는 `rag/compare_embeddings.py`). 환경변수 `EMBEDDING_MODEL`·`CHROMA_DIR`·`RAG_RESULTS_DIR`만 바꾸면 같은 명령으로 재현 |
+| `make_figures.py`, `img/` | README의 결과 그래프(PNG 4장)와 이를 만드는 스크립트(`python docs/make_figures.py`) |
 | `experiment_results_agent_v2.md` | E3-b 위에서 Agent를 개선한 실험(A1·A2·A3, 프롬프트 대조군 C0): 결과, 해석, Agent 구성 판단. 옵션 `--agent-options v2=1,analyze_model=...`, `--rag-prompt v2` |
 | `dashboard/` | 평가 결과 대시보드(streamlit). 개요·검색 단계·답변 비교·비용 대비 품질·반복 오차·문항 탐색·임베딩 비교 탭. 실행은 아래 '결과 보기' |
 | `experiment_records.md` | 결과를 어떻게 저장·비교하는지: 폴더 구조, config·문항별 결과 스키마, 지표 정의, 비교 도구 |
