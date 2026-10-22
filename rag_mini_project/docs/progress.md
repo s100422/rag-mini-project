@@ -13,7 +13,7 @@
 | 답변 평가 | B0, E3, E4, E6, 합친 설정 E8, 반복. 실행 33개 | `rag/answer_eval.py`, `results/runs/*_rag_*` |
 | Agent | 검색 재시도형 구현, 구조도, 평가(전체·재검색 끔·분석 끔, 두 세트). 실행 8개 | `rag/agent.py`, `docs/agent_graph.md`, `results/runs/*_agent_*` |
 | 분석 도구 | 비교, 반복 평균 집계, 실패 원인 분류, 사람 대조 시트 | `rag/compare.py`, `rag/report.py`, `rag/failure_analysis.py`, `rag/human_sheet.py` |
-| 문서 | 계획, 결과, 기록 설계, Agent 구조도, 실행 방법, 회고 | `docs/` 아래 |
+| 문서 | 계획, 결과, 기록 설계, Agent 구조도 | `docs/` 아래 |
 
 실험 기록: `results/experiments.csv`(76행), 설정별 실험 ID는 `python -m rag.report --runs`.
 
@@ -48,7 +48,7 @@
 준비: Postgres 실행, 상위 폴더 `.env`(API 키, DB, `CHROMA_DIR`) 확인. 명령은 `rag_mini_project/`에서 실행한다.
 
 - 평가 시간은 판정 모델 대기가 대부분이라 `--workers 16`으로 올리고 여러 평가를 터미널 여러 개에서 동시에 돌린다(평가 하나가 약 3분). 동시 처리 수가 다르면 `응답 시간` 열은 비교할 수 없다.
-- 명령 형식과 컬렉션 이름은 `docs/README.md`에 있다. 반복은 이름 끝에 `-rep2`처럼 붙이면 `python -m rag.report`가 한 설정으로 묶는다.
+- 명령 형식은 `rag/answer_eval.py` 맨 위 설명에 있다. 반복은 이름 끝에 `-rep2`처럼 붙이면 `python -m rag.report`가 한 설정으로 묶는다.
 - 끝난 뒤 `python -m rag.report --md docs/answer_tables.md`로 표를 다시 만들고 `docs/experiment_results.md`를 갱신한다.
 
 ## 5. 알아둘 점

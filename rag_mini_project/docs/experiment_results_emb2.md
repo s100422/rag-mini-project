@@ -115,4 +115,4 @@
 ## 4. 다음에 할 만한 것
 
 - **task 접두어 재실험(가장 우선):** 002는 질의에 `task: search result | query: ...`, 문서에 `title: none | text: ...` 같은 지시문을 텍스트 앞에 붙이는 방식이 권장된다. 접두어를 넣고 B0·E3-b만 다시 돌려 0절 1번의 효과를 가른다(색인 컬렉션 2~4개, 검색 평가 몇 개, 답변 평가 몇 개).
-- 같은 임베딩을 쓰는 평가를 더 하려면 환경변수 3개(`EMBEDDING_MODEL`, `CHROMA_DIR`, `RAG_RESULTS_DIR`)만 바꿔 같은 명령을 돌리면 된다(`docs/README.md`).
+- 같은 임베딩을 쓰는 평가를 더 하려면 환경변수 3개(`EMBEDDING_MODEL`, `CHROMA_DIR`, `RAG_RESULTS_DIR`)만 바꿔 같은 명령을 돌리면 된다.

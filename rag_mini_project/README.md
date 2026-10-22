@@ -15,8 +15,6 @@
 | `dashboard/` | 평가 결과 대시보드(streamlit). 개요·검색 단계·답변 비교·비용 대비 품질·반복 오차·문항 탐색·임베딩 비교 탭. 실행은 아래 '결과 보기' |
 | `experiment_records.md` | 결과를 어떻게 저장·비교하는지: 폴더 구조, config·문항별 결과 스키마, 지표 정의, 비교 도구 |
 | `agent_graph.md` | Agent(검색 재시도형) 그래프 구조도: 노드, 분기, 종료 조건, 요소 끄기(ablation) |
-| `인수인계서.md` | **다른 AI에게 넘기는 문서**: 현재 상태, 남은 일, 사용자 선호, 환경, 함정 |
-| `회고.md` | 겪은 문제와 개선 방안 |
 | `progress.md` | **진행 기록**: 끝낸 것, 결론, 남은 것, 평가를 더 돌릴 때 |
 | `answer_tables.md` | 답변 단계 설정별 결과 표(`python -m rag.report --md`로 생성) |
 | `plan_extract_p4l_fixes.md` | PDF → md 추출 개선 계획(추출 단계 기록) |
