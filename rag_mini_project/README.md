@@ -87,7 +87,8 @@ python -m rag.human_sheet compare         # 채점한 시트와 판정 모델의
 
 ## 📜 구현 요약 (이 저장소의 결과)
 
-위는 과제 안내이고, 아래는 이 저장소에서 실제로 한 일을 짧게 정리한 것이다. 자세한 내용은 [`docs/experiment_plan.md`](docs/experiment_plan.md)(평가 계획), [`docs/experiment_results.md`](docs/experiment_results.md)(결과), [`docs/agent_graph.md`](docs/agent_graph.md)(Agent 구조), [`docs/experiment_records.md`](docs/experiment_records.md)(결과 기록 방식)에서 찾는다.
+더 자세한 내용
+→ [`docs/experiment_plan.md`](docs/experiment_plan.md)(평가 계획), [`docs/experiment_results.md`](docs/experiment_results.md)(결과), [`docs/agent_graph.md`](docs/agent_graph.md)(Agent 구조), [`docs/experiment_records.md`](docs/experiment_records.md)(결과 기록 방식)
 
 ### 한눈에 보기
 
