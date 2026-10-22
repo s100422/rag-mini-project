@@ -241,3 +241,16 @@ streamlit run rag_mini_project/dashboard/app.py
 ```
 
 위 명령은 저장소 루트(`rag-mini-project/`)에서 실행한다. `rag_mini_project/` 안에서는 `streamlit run dashboard/app.py`이다. 결과 폴더(`results/`, `results_emb2/`)를 읽기만 한다.
+
+### 5. 챗봇으로 질문하기
+
+문서에 대해 직접 물어볼 수 있는 챗봇이다. 질문하면 PDF 23개에서 근거를 찾아 한국어로 답하고, **근거의 파일명·쪽과 원문**을 함께 보여 준다. 최종 설정(구조 단위 parent-child 검색 + Agent v2)을 그대로 쓴다.
+
+```bash
+streamlit run rag_mini_project/chatbot/app.py
+```
+
+- 질문 유형에 따라 Agent가 다르게 움직인다: 일반 질문은 근거와 함께 답하고, 정보가 빠진 질문(예: "이 계좌는 배우자가 이어받을 수 있어?")은 필요한 정보를 되묻고, 종목 추천 같은 투자 권유는 거절하고 위험을 안내한다.
+- 답변의 `[1]` 같은 번호는 "근거 보기"의 항목 번호다. 인용된 근거와 검색만 된 근거를 구분해서 보여 준다.
+- 준비물: Postgres 실행, 상위 폴더 `.env`(API 키, DB, `CHROMA_DIR`), 색인된 컬렉션(`base_pc_c500_o50`, `extended_pc_c500_o50`).
+- 한계: 각 질문을 독립적으로 처리한다(앞선 대화를 기억하지 않는다). 평가에서는 기본·확장 문서 묶음을 따로 검색했지만 챗봇은 합쳐서 검색한다(합친 조건은 평가하지 않았다). 답변 한 번에 약 5~9초 걸린다(모델 호출 2회).
