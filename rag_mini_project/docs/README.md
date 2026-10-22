@@ -6,6 +6,7 @@
 |---|---|
 | `experiment_plan.md` | 실험 계획: 평가 세트, 기준 설정(B0), 지표, 비교 실험(E1~E8) 가설, 최종 설정 선택 기준, 진행 순서 |
 | `experiment_results.md` | 실험 결과: 검색 단계·답변 단계 표, 아이디어별 해석, 실패 사례 분석, 잠정 선택, 한계 |
+| `experiment_results_emb2.md` | 같은 실험을 임베딩 gemini-embedding-2로 다시 돌린 결과와 001 비교(결과 `results_emb2/`, 표는 `rag/compare_embeddings.py`). 환경변수 `EMBEDDING_MODEL`·`CHROMA_DIR`·`RAG_RESULTS_DIR`만 바꾸면 같은 명령으로 재현 |
 | `experiment_records.md` | 결과를 어떻게 저장·비교하는지: 폴더 구조, config·문항별 결과 스키마, 지표 정의, 비교 도구 |
 | `agent_graph.md` | Agent(검색 재시도형) 그래프 구조도: 노드, 분기, 종료 조건, 요소 끄기(ablation) |
 | `인수인계서.md` | **다른 AI에게 넘기는 문서**: 현재 상태, 남은 일, 사용자 선호, 환경, 함정 |
