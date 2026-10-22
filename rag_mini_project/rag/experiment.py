@@ -13,6 +13,7 @@ import os
 import platform
 import subprocess
 import sys
+import time
 from datetime import datetime
 from importlib import metadata
 from pathlib import Path
@@ -51,7 +52,7 @@ def code_version() -> str:
     try:
         head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True,
                               encoding="utf-8", errors="replace", check=True).stdout.strip()
-        dirty = subprocess.run(["git", "status", "--porcelain", "--", "."], cwd=ROOT, capture_output=True,
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", ".", ":(exclude)results*"], cwd=ROOT, capture_output=True,
                                encoding="utf-8", errors="replace", check=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         return "unknown"
@@ -155,11 +156,22 @@ def write_csv(path: Path, rows: list[dict]) -> None:
 
 def append_index(row: dict) -> None:
     """experiments.csv에 한 줄 추가(열이 늘면 기존 줄은 빈 칸)."""
-    old = []
-    if INDEX.exists():
-        with INDEX.open(newline="", encoding="utf-8-sig") as fp:
-            old = list(csv.DictReader(fp))
-    write_csv(INDEX, old + [row])
+    # 평가를 동시에 돌리면 읽고-쓰는 사이에 다른 실행의 줄이 사라지므로 잠금 파일로 순서를 맞춘다
+    lock = INDEX.with_suffix(".lock")
+    for _ in range(600):
+        try:
+            os.close(os.open(lock, os.O_CREAT | os.O_EXCL))
+            break
+        except FileExistsError:
+            time.sleep(0.1)
+    try:
+        old = []
+        if INDEX.exists():
+            with INDEX.open(newline="", encoding="utf-8-sig") as fp:
+                old = list(csv.DictReader(fp))
+        write_csv(INDEX, old + [row])
+    finally:
+        lock.unlink(missing_ok=True)
 
 
 def command_line() -> str:
